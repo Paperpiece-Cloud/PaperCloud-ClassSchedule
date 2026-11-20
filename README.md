@@ -1,6 +1,6 @@
 
 # ▶️PaperCloud·做纯净的班务系统  
-https://papercloud.top/
+**https://papercloud.top/**  
 为班级 49 人做的班级门户网站
 
 课表，值日表，班级管理等（最后撰写的时候，各位都养成看自己班课表的习惯啦）
@@ -84,12 +84,13 @@ python app/server.py
 
 ---
 
-## License
-
-个人项目，仅用于班级内部。
-
 ##📧联系我
 Gmail:leezm0311new@gmail.com  
 Apple iCloud:paperapple0311@icloud.com  
 163:LZM200803111211@163.com
+
+---
+## License
+
+个人项目，仅用于班级内部
 
