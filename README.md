@@ -87,7 +87,7 @@ python app/server.py
 个人项目，仅用于班级内部。
 
 ##📧联系我
-Gmail:leezm0311new@gmail.com
-Apple iCloud:paperapple0311@icloud.com
+Gmail:leezm0311new@gmail.com  
+Apple iCloud:paperapple0311@icloud.com  
 163:LZM200803111211@163.com
 
