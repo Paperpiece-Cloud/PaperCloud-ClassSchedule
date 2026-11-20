@@ -1,5 +1,5 @@
 
-# PaperCloud·做纯净的班务系统
+# ▶️PaperCloud·做纯净的班务系统
 
 为班级 49 人做的班级门户网站：课表、值班、班级管理
 
@@ -84,25 +84,8 @@ python app/server.py
 
 个人项目，仅用于班级内部。
 
-
-
-
----
-# 新加入QQ机器人 Via NapCat
-Ver1.1
-似乎NapCat活不长了
-*腾讯律师函.pdf*
-
-还是Python哥哥 
-`
-app/qq.py              接口（发消息、群白名单、消息构造）
-app/qqsched.py         定时任务（课表提醒、值日）
-auto-sync/auto-sync.js 外部同步服务（NapCat 协议，顺便给了本地端口一个监听）
-`
-
-## 依赖
-
-- NapCat HTTPS作为消息通道
-- 群号、访问口令config/secrets.json
-- 机器人与站点不互相干扰
+##📧联系我
+Gmail:leezm0311new@gmail.com
+Apple iCloud:paperapple0311@icloud.com
+163:LZM200803111211@163.com
 
