@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PaperCloud · 做纯净的班务系统</title>
+<meta name="theme-color" content="#eaf3ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-192.png?v=20261023" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261023">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PaperCloud">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.webmanifest">
+<script>
+(function () {
+  function apply(v) { document.documentElement.setAttribute('data-theme', v === 'dark' ? 'dark' : 'light'); }
+  var saved = '';
+  try { saved = localStorage.getItem('kt_theme') || localStorage.getItem('kt-theme') || ''; } catch (e) { }
+  if (saved === 'dark' || saved === 'light') { apply(saved); return; }
+  // 没手动选过就跟随系统，并且系统变了实时跟着切
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  apply(mq && mq.matches ? 'dark' : 'light');
+  if (mq) {
+    var on = function () { apply(mq.matches ? 'dark' : 'light'); };
+    if (mq.addEventListener) mq.addEventListener('change', on);
+    else if (mq.addListener) mq.addListener(on);
+  }
+})();
+</script>
+
+<style>
+:root{
+  --ink:#16202c;
+  --ink2:#5a6b7d;
+  --ink3:#93a3b4;
+  --line:#dfe7f0;
+  --card:#ffffff;
+  --accent:#3d9df6;
+  --r:20px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  padding:22px;
+  padding-top:calc(22px + env(safe-area-inset-top));
+  padding-bottom:calc(22px + env(safe-area-inset-bottom));
+  /* 慢速浅色渐变背景 */
+  background:linear-gradient(125deg,#c9e3ff 0%,#ded0ff 26%,#bff2dd 52%,#ffe4b8 76%,#c9e3ff 100%);
+  background-size:400% 400%;
+  animation:drift 22s ease-in-out infinite;
+  -webkit-font-smoothing:antialiased;
+}
+@keyframes drift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@media (prefers-reduced-motion: reduce){ body{animation:none} }
+
+/* 手机形状的卡片 */
+.phone{
+  width:min(100%,384px);
+  background:var(--card);
+  border-radius:30px;
+  border:1px solid #e6edf5;
+  box-shadow:0 22px 60px #6f8cae2e, 0 2px 6px #6f8cae14;
+  overflow:hidden;
+  animation:enter .62s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes enter{ from{opacity:0;transform:translateY(18px) scale(.975)} to{opacity:1;transform:none} }
+
+/* 顶栏 */
+.topbar{
+  display:flex;align-items:center;gap:8px;
+  padding:16px 20px 14px;
+  border-bottom:1px solid var(--line);
+  font-size:14.5px;font-weight:700;
+}
+.topbar .bead{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 3px #3d9df622;
+  flex:none;
+}
+
+/* 主体 */
+.body{padding:38px 26px 30px;text-align:center}
+
+/* 圆形图标 */
+.orb{
+  width:104px;height:104px;border-radius:50%;
+  margin:0 auto 22px;
+  background:#fff;
+
+  box-shadow:inset 0 -4px 12px #cfe0f230, 0 8px 24px #6f8cae1f;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  animation:pop .7s cubic-bezier(.16,1,.3,1) .08s both;
+}
+@keyframes pop{ from{opacity:0;transform:scale(.82)} to{opacity:1;transform:none} }
+.orb img{width:100%;height:100%;object-fit:contain;display:block}
+
+/* 短横线 + 文字 */
+.rule{height:2px;width:54px;background:var(--ink);border-radius:2px;margin:0 auto 16px;opacity:.85}
+
+.brand{
+  font-size:29px;font-weight:850;letter-spacing:-.035em;line-height:1.1;
+  margin:0 0 8px;
+}
+.slogan{
+  font-size:13.5px;color:var(--ink2);font-weight:500;
+  letter-spacing:.01em;line-height:1.6;margin:0;
+}
+
+/* 长横线（分隔） */
+.rule2{height:1px;background:var(--line);margin:28px 0 22px}
+
+/* 三个按钮 */
+.acts{display:flex;flex-direction:column;gap:12px}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;padding:15px 18px;
+  font-size:15px;font-weight:750;font-family:var(--font);
+  color:var(--ink);text-decoration:none;
+  background:#fff;
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  cursor:pointer;
+  transition:transform .16s cubic-bezier(.16,1,.3,1), border-color .2s, box-shadow .2s, background .2s;
+}
+.btn:hover{border-color:#c9d8e8;box-shadow:0 6px 18px #6f8cae1c;transform:translateY(-1px)}
+.btn:active{transform:scale(.985)}
+.btn .ico{font-size:17px;line-height:1;flex:none;opacity:.9}
+.btn.primary{
+  color:#fff;border-color:transparent;
+  background:linear-gradient(135deg,#4aa8ff,#3d86f6);
+  box-shadow:0 8px 22px #3d86f638;
+}
+.btn.primary .ico{opacity:1}
+.btn.ghost{color:var(--ink2);background:#fafcfe}
+
+/* 还没做好的入口：灰色虚线边框，点了没反应，但看得出以后会有 */
+.btn.soon{
+  color:#b9c5d2;
+  background:#f9fbfd;
+  border-color:#eef3f8;
+  border-style:dashed;
+  cursor:not-allowed;
+  position:relative;
+}
+.btn.soon:hover{transform:none;box-shadow:none;border-color:#eef3f8}
+.btn.soon:active{transform:none}
+.btn.soon .ico{opacity:.38;filter:grayscale(1)}
+.btn.soon .tag{
+  position:absolute;right:13px;
+  font-size:10.5px;font-weight:700;
+  color:#9fb0c1;background:#eef4fa;
+  padding:2px 8px;border-radius:999px;
+}
+
+/* 班务系统上线气泡：淡黄渐变，指向按钮 */
+.actwrap{position:relative;display:flex;flex-direction:column;gap:12px}
+/* 之前这里是 display:block —— .acts 的 gap:12px 传不进来，
+   导致里面的「班务系统」和「工具箱」贴在一起。 */
+.tip2{
+  position:absolute;
+  left:0;right:0;top:calc(100% + 11px);
+  z-index:30;
+  padding:11px 14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#fffdf3 0%,#fff8d9 46%,#ffeeaf 100%);
+  border:1px solid #f2dfa2;
+  color:#7d5f14;
+  font-size:12.5px;font-weight:650;line-height:1.7;letter-spacing:.01em;
+  text-align:center;
+  box-shadow:0 14px 34px rgba(150,110,20,.20), 0 2px 6px rgba(150,110,20,.10);
+  opacity:0;transform:translateY(-7px) scale(.96);
+  pointer-events:none;
+  transition:opacity .34s cubic-bezier(.16,1,.3,1),transform .34s cubic-bezier(.16,1,.3,1);
+}
+.tip2.on{opacity:1;transform:none}
+.tip2-arrow{
+  position:absolute;top:-6.5px;right:38px;
+  width:13px;height:13px;
+  background:#fffdf3;
+  border-left:1px solid #f2dfa2;
+  border-top:1px solid #f2dfa2;
+  transform:rotate(45deg);
+}
+/* 向下指的那一版（放在按钮下方时用） */
+@media (prefers-reduced-motion: reduce){
+  .tip2{transition:opacity .01s}
+}
+
+/* ==================== 深色 ==================== */
+html[data-theme="dark"]{
+  --ink:#e9f1fa; --ink2:#a8bccf; --ink3:#7d8fa3;
+  --line:rgba(255,255,255,.14); --card:#1c2836; --accent:#5aa8ff;
+}
+html[data-theme="dark"] body{
+  background:linear-gradient(125deg,#16283d 0%,#24203c 26%,#10312a 52%,#3a2c14 76%,#16283d 100%);
+  background-size:400% 400%;
+}
+html[data-theme="dark"] .phone{
+  background:linear-gradient(180deg,rgba(34,46,60,.94),rgba(23,33,45,.94));
+  border-color:rgba(255,255,255,.12);
+  box-shadow:0 22px 60px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.35);
+}
+html[data-theme="dark"] .topbar{border-bottom-color:rgba(255,255,255,.12)}
+html[data-theme="dark"] .orb{
+  background:linear-gradient(150deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+  border-color:rgba(255,255,255,.12);
+  box-shadow:inset 0 -4px 12px rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.35);
+}
+html[data-theme="dark"] .orb img{filter:brightness(1.05)}
+html[data-theme="dark"] .rule{background:#e9f1fa;opacity:.9}
+html[data-theme="dark"] .rule2{background:rgba(255,255,255,.13)}
+html[data-theme="dark"] .btn{
+  background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.075) 100%);
+  border-color:rgba(255,255,255,.17);
+  color:#eaf2fb;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 22px rgba(0,0,0,.36);
+}
+html[data-theme="dark"] .btn:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.25) 0%,rgba(255,255,255,.14) 100%);
+  border-color:rgba(255,255,255,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 12px 30px rgba(0,0,0,.45);
+}
+html[data-theme="dark"] .btn.ghost{background:rgba(255,255,255,.05);color:#a8bccf}
+html[data-theme="dark"] .btn.primary{
+  background:linear-gradient(180deg,#5aabff 0%,#2270e2 100%);
+  border-color:rgba(255,255,255,.22);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 26px rgba(20,90,200,.4);
+}
+html[data-theme="dark"] .slogan{color:#a8bccf}
+html[data-theme="dark"] .foot{color:#7d8fa3}
+html[data-theme="dark"] .foot b{color:#a8bccf}
+/* 班务系统气泡 */
+html[data-theme="dark"] .tip2{
+  background:linear-gradient(135deg,#3a3218 0%,#332b12 46%,#3d3113 100%);
+  border-color:#5a4a1c;color:#f0d894;
+  box-shadow:0 14px 34px rgba(0,0,0,.5);
+}
+html[data-theme="dark"] .tip2-arrow{background:#3a3218;border-left-color:#5a4a1c;border-top-color:#5a4a1c}
+
+/* 页脚 */
+.foot{
+  text-align:center;font-size:11px;color:var(--ink3);
+  padding:0 0 20px;line-height:1.7;
+}
+.foot b{color:var(--ink2)}
+
+/* 首页气泡：标题 + 两行说明 */
+.tip2 .tip2-h{display:block;font-size:13.5px;font-weight:850;margin-bottom:5px;
+  letter-spacing:-.01em}
+.tip2 span{display:block;font-size:12.5px;line-height:1.75;opacity:.92}
+.tip2 .tip2-x{margin-top:5px;padding-top:5px;opacity:.78;
+  border-top:1px dashed rgba(200,170,90,.35)}
+html[data-theme="dark"] .tip2 .tip2-x{border-top-color:rgba(200,170,90,.28)}
+.phone{ margin:0 auto !important; flex:none !important; }
+</style>
+<style id="ktGlass">
+/* =====================================================================
+   PaperCloud · 液态玻璃 + 全站渐变
+   只作用在「本身就是卡片」的元素和交互控件上，
+   不碰 .toolbar / .minis / .chain 这类纯布局容器。
+   ===================================================================== */
+
+@keyframes ktDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- 2. 按钮：液态玻璃 ---------- */
+.btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  position: relative !important;
+  /* 不用 backdrop-filter —— Safari 上会让按钮里的文字变淡。
+     改用两层不透明渐变模拟玻璃：斜向反光条 + 纵向厚度 */
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.98) 0%,
+      rgba(255,255,255,.42) 26%,
+      rgba(255,255,255,.06) 47%,
+      rgba(255,255,255,.06) 58%,
+      rgba(255,255,255,.58) 83%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #ffffff 0%, #f2f7fd 46%, #e3ecf7 100%) !important;
+  color: #101c28 !important;
+  -webkit-text-fill-color: #101c28 !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,.5),
+    0 1px 1.5px rgba(20,50,90,.08),
+    0 7px 20px rgba(20,50,90,.12) !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s !important;
+}
+.btn:hover, .btn-ghost:hover, .callbtn:hover, .ico:hover, .st:hover, .chip:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.70) 48%,
+      rgba(255,255,255,.58) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 2px 3px rgba(20,50,90,.09),
+    0 12px 30px rgba(20,50,90,.16) !important;
+  transform: translateY(-1px);
+}
+.btn:active, .btn-ghost:active, .callbtn:active, .ico:active, .st:active {
+  transform: scale(.965);
+  box-shadow: inset 0 1px 2px rgba(20,50,90,.14),
+              0 3px 10px rgba(20,50,90,.10) !important;
+}
+
+/* 主按钮：蓝玻璃（不透明，避免 Safari 冲淡文字） */
+.btn.pri, .btn-ghost.primary, .btn.primary {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.55) 0%,
+      rgba(255,255,255,.12) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #6cb8ff 0%, #3d8ff2 50%, #2a72dc 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 2px 3px rgba(20,70,140,.20),
+    0 10px 26px rgba(40,120,220,.34) !important;
+}
+.btn.dg { color: #e8454b !important; }
+
+.tab.on {
+  background: linear-gradient(180deg,
+      rgba(96,180,255,.95) 0%,
+      rgba(50,132,244,.93) 100%) !important;
+  color: #fff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6),
+              0 6px 18px rgba(40,120,220,.32) !important;
+}
+.st[data-on="1"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55),
+              0 6px 16px rgba(20,50,90,.22) !important;
+}
+
+/* ---------- 3. 卡片：磨砂玻璃（不动圆角） ---------- */
+.card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  -webkit-backdrop-filter: blur(26px) saturate(185%) !important;
+  backdrop-filter: blur(26px) saturate(185%) !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.76) 0%,
+      rgba(255,255,255,.62) 100%) !important;
+  border-color: rgba(255,255,255,.7) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 1px 2px rgba(20,50,90,.05),
+    0 14px 38px rgba(20,50,90,.10) !important;
+}
+
+/* ---------- 4. 输入框 ---------- */
+input[type=text], input[type=date], input[type=tel],
+input[type=datetime-local], select, textarea {
+  -webkit-backdrop-filter: blur(14px) saturate(170%) !important;
+  backdrop-filter: blur(14px) saturate(170%) !important;
+  background: rgba(255,255,255,.62) !important;
+  border: 1px solid rgba(255,255,255,.8) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              inset 0 2px 6px rgba(20,50,90,.05) !important;
+}
+input:focus, select:focus, textarea:focus {
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(96,180,255,.9) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 0 0 3px rgba(96,180,255,.22) !important;
+}
+
+/* =====================================================================
+   5. 深色主题 —— 用和上面完全一样的选择器清单，避免漏网
+   ===================================================================== */
+html[data-theme="dark"], html[data-theme="dark"] body {
+  background: linear-gradient(125deg,
+      #16283d 0%, #24203c 26%, #10312a 52%, #3a2c14 76%, #16283d 100%) !important;
+  background-size: 400% 400% !important;
+  background-attachment: fixed !important;
+  animation: ktDrift 22s ease-in-out infinite !important;
+}
+
+html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.22) 0%,
+      rgba(255,255,255,.06) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.12) 100%),
+    linear-gradient(180deg, #33404f 0%, #28323f 50%, #1f2833 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 8px 22px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] .btn:hover,
+html[data-theme="dark"] .btn-ghost:hover,
+html[data-theme="dark"] .ico:hover,
+html[data-theme="dark"] .callbtn:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.26) 0%,
+      rgba(255,255,255,.16) 100%) !important;
+}
+html[data-theme="dark"] .btn.pri,
+html[data-theme="dark"] .btn-ghost.primary,
+html[data-theme="dark"] .btn.primary {
+  background: linear-gradient(180deg,
+      #5aabff 0%, #2270e2 100%) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+}
+html[data-theme="dark"] .btn.dg { color: #ff8b8f !important; }
+
+html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.085) 0%,
+      rgba(255,255,255,.04) 100%) !important;
+  border-color: rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 14px 38px rgba(0,0,0,.44) !important;
+}
+
+html[data-theme="dark"] input, html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  color: #e9f1fa !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #7d8fa3 !important; }
+html[data-theme="dark"] .tab.on {
+  background: linear-gradient(180deg,
+      rgba(86,168,255,.95) 0%,
+      rgba(34,112,226,.95) 100%) !important;
+}
+
+/* Safari / 老浏览器不支持 backdrop-filter 时退化成接近不透明 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(255,255,255,.94) !important; }
+  .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(255,255,255,.96) !important; }
+  html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(40,54,70,.94) !important; }
+  html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(30,42,56,.95) !important; }
+}
+</style>
+<style id="ktGlassExtra">
+/* ---------- 6. 右上角图标按钮：浅色模式下用深色，别和浅背景糊一起 ---------- */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #3b4552 0%, #262e39 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    0 6px 16px rgba(18,28,45,.30) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5563 0%, #303945 100%) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式下保持玻璃，但给个亮一点的边 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  color: #eaf2fb !important;
+  border-color: rgba(255,255,255,.22) !important;
+}
+
+/* ---------- 7. 政治面貌等小标签：跟着背景走，不再用固定色 ---------- */
+.pill, .tag {
+  background: rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+  backdrop-filter: blur(10px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  color: #4a6076 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 1px 3px rgba(20,50,90,.07) !important;
+}
+html[data-theme="dark"] .pill, html[data-theme="dark"] .tag {
+  background: rgba(255,255,255,.11) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #b3c6d8 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+/* 性别 / 状态那几种彩色小标签也适配 */
+html[data-theme="dark"] .pill.m { background: rgba(80,160,255,.22) !important; color: #8ec8ff !important; border-color: rgba(120,190,255,.28) !important; }
+html[data-theme="dark"] .pill.f { background: rgba(255,120,190,.20) !important; color: #f0a5cd !important; border-color: rgba(255,150,205,.26) !important; }
+html[data-theme="dark"] .pill.off { background: rgba(255,255,255,.08) !important; color: #8b9aab !important; }
+/* 头衔：金标签，深色下换成低饱和暖金 */
+html[data-theme="dark"] .ttl {
+  background: linear-gradient(135deg, rgba(255,215,120,.18), rgba(255,190,60,.12)) !important;
+  color: #f0c75e !important;
+  border: 1px solid rgba(240,199,94,.30) !important;
+}
+
+/* 右上角深色按钮同样不用 backdrop-filter，避免文字被冲淡 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+</style>
+<style id="ktTopBtn">
+/* ===== 右上角按钮：随深浅模式变色 + 缩小 ===== */
+#themeBtn, .head-right .icon-btn, .head-right .ibtn,
+.topin .ico, .topbar .ico {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 9px !important;
+  font-size: 13.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s, background .2s !important;
+}
+/* 浅色模式：白玻璃 + 深字 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .head-right .ibtn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f6fc 55%, #e6eef8 100%) !important;
+  color: #2b3947 !important;
+  -webkit-text-fill-color: #2b3947 !important;
+  border: 1px solid rgba(255,255,255,.95) !important;
+  box-shadow: inset 0 1px 0 #fff,
+              0 1px 2px rgba(20,50,90,.08),
+              0 4px 12px rgba(20,50,90,.12) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .head-right .ibtn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #eaf2fb 100%) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(20,50,90,.18) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式：深玻璃 + 浅字 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .head-right .ibtn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  background: linear-gradient(180deg, #3b4756 0%, #2a3441 55%, #222b36 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22),
+              0 6px 16px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] #themeBtn:hover,
+html[data-theme="dark"] .head-right .icon-btn:hover,
+html[data-theme="dark"] .head-right .ibtn:hover,
+html[data-theme="dark"] .topin .ico:hover,
+html[data-theme="dark"] .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5766 0%, #333e4c 100%) !important;
+  transform: translateY(-1px);
+}
+:active#themeBtn, .head-right .icon-btn:active, .topin .ico:active {
+  transform: scale(.93) !important;
+}
+/* edit.html 那个带文字的「返回课表」按钮保持原样，只把它挪到右边 */
+.head-right #backLink { margin-left: 0; }
+
+/* 工具箱：美团黄。选择器必须写成 html a.btn.tools ——
+   页面后面那条 html[data-theme=dark] ... a.btn 的优先级是 (0,2,1)，
+   普通的 .btn.tools 只有 (0,2,0)，加 !important 也压不过去。 */
+html a.btn.tools{
+  color:#4a3200 !important;
+  border-color:transparent !important;
+  background:linear-gradient(135deg,#ffd93d 0%,#ffb02e 100%) !important;
+  box-shadow:0 8px 22px rgba(255,168,30,.38) !important;
+}
+html a.btn.tools .ico{opacity:1 !important;font-size:18px}
+html a.btn.tools:hover{
+  border-color:#ffc94a !important;
+  box-shadow:0 12px 28px rgba(255,168,30,.5) !important;
+}
+html[data-theme=dark] a.btn.tools{
+  color:#3a2600 !important;
+  background:linear-gradient(180deg,#ffd44d 0%,#e89b1c 100%) !important;
+  border-color:rgba(255,255,255,.25) !important;
+  box-shadow:0 8px 22px rgba(255,168,30,.42) !important;
+}
+
+/* 班务系统：绿色 */
+html a.btn.cls{
+  color:#0d3a22 !important;
+  border-color:transparent !important;
+  background:linear-gradient(135deg,#7ee0a8 0%,#34c072 100%) !important;
+  box-shadow:0 8px 22px rgba(40,180,110,.34) !important;
+}
+html a.btn.cls:hover{
+  border-color:#5fd198 !important;
+  box-shadow:0 12px 28px rgba(40,180,110,.46) !important;
+}
+html[data-theme="dark"] a.btn.cls{
+  color:#06301b !important;
+  background:linear-gradient(180deg,#6fd9a2 0%,#2fae67 100%) !important;
+  border-color:rgba(255,255,255,.24) !important;
+}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <button class="aboutBtn" id="aboutBtn" type="button">关于</button>
+  <div class="topbar"><span class="bead"></span>首页</div>
+
+  <div class="body">
+    <div class="orb"><img src="/static/school-logo.png?v=20261023" alt="现代通信一班"></div>
+
+    <div class="rule"></div>
+
+    <h1 class="brand">PaperCloud</h1>
+    <p class="slogan">做纯净的班务系统</p>
+<style>
+/* 首页：链入说明（从课表页搬过来的） */
+#ktChainHome{
+  margin:22px auto 4px; padding:0 8px; max-width:340px;
+  display:flex; flex-direction:column; gap:7px; align-items:center;
+  text-align:left;
+}
+#ktChainHome .cl{
+  display:flex; align-items:center; gap:8px;
+  font:600 11.5px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink3, #8a97a6); letter-spacing:.01em;
+  opacity:.9;
+}
+#ktChainHome .ci{
+  flex:none; width:16px; height:16px; display:inline-flex;
+  align-items:center; justify-content:center; font-size:12px;
+  opacity:.75;
+}
+html[data-theme="dark"] #ktChainHome .cl{ color:#7d8fa3; }
+@media (max-width:400px){
+  #ktChainHome{ max-width:300px; }
+  #ktChainHome .cl{ font-size:11px; }
+}
+</style>
+
+<div id="ktChainHome">
+<div id="ktChainHome-inner">
+    <div class="cl">
+      <svg class="ci" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#F6821F" d="M18.4 11.2c-.15-.75-.8-1.3-1.6-1.3-.2 0-.4 0-.6.1L8.5 12.1c-.5.15-.8.6-.75 1.1l.05.4c.1.5.55.85 1.05.8l7.8-1.35c.3-.05.6.05.8.3.2.25.25.6.15.9l-2 6.1c-.15.5.2 1 .7 1h5.1c.45 0 .85-.3.95-.75l1.6-6.8c.15-.55-.25-1.1-.85-1.1h-4.1c-.3 0-.5-.2-.55-.5z"/>
+        <path fill="#FBAD41" d="M14.1 5.6c-.75-1.7-2.4-2.9-4.35-2.9-2.6 0-4.75 1.85-5.2 4.3-.6-.35-1.3-.45-1.95-.25C1.5 7.05.7 8.15.75 9.35c.05.55.3 1.05.7 1.4.35-.15.75-.25 1.15-.25 2.05 0 3.8 1.55 4.05 3.55l.15 1.1h7.3l1.4-4.7c.2-.7.1-1.4-.2-2-.35-.75-1-1.3-1.9-1.5-.55-.15-1.1-.1-1.6.1z"/>
+      </svg>
+      <span>由 Cloudflare 链入公网</span>
+    </div>
+    <div class="cl">
+      <svg class="ci" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#FF6A00" d="M12.2 3.6 4.4 8.1v3.2l3.9-2.3 5.9 3.4v3.2l-5.9-3.4-3.9 2.3 7.8 4.5 7.8-4.5v-3.2l-3.9 2.3-5.9-3.4V7.1l5.9 3.4 3.9-2.3-7.8-4.6z"/>
+        <path fill="#FF6A00" d="M4.4 13v3.2l7.8 4.5 7.8-4.5V13l-3.9 2.3-3.9-2.3-3.9 2.3L4.4 13z" opacity=".55"/>
+      </svg>
+      <span>由阿里云提供基础安全保护</span>
+    </div>
+    <div class="cl">
+      <img class="apple-img" src="/static/apple-logo.png?v=20261108" alt="" aria-hidden="true">
+      <span>全站适配 Apple iOS 26 / 27 Liquid Glass</span>
+    </div>
+  </div>
+</div>
+
+
+    <div class="rule2"></div>
+
+    <div class="acts">
+      <a class="btn primary" id="lnkTimetable" href="/timetable">
+        在线课表
+      </a>
+      <div class="actwrap">
+        <a class="btn cls" id="lnkClass" href="/class">
+          班务系统
+        </a>
+
+        <a class="btn tools" id="lnkTools" href="/tools">
+          工具箱
+        </a>
+
+        <a class="btn ghost" id="lnkAdmin" href="/admin">
+          管理后台
+        </a>
+
+        <button class="btn ghost" id="btnTheme" type="button">
+          跟随系统
+        </button>
+      </div>
+
+      <div class="credit">Made BY <b>Paperpiece</b> · 仅现代通信1班使用</div>
+</div>
+  </div>
+
+
+<!-- 校园 720 全景入口 -->
+<section class="tourSec" id="tourSec">
+  <div class="tourInner">
+    <div class="tourHint">上滑查看</div>
+    <div class="tourCard" id="tourCard" role="button" tabindex="0">
+      <img class="tourPic on" src="/static/campus/c1.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async"><img class="tourPic" src="/static/campus/c2.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async"><img class="tourPic" src="/static/campus/c3.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async"><img class="tourPic" src="/static/campus/c4.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async"><img class="tourPic" src="/static/campus/c5.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async"><img class="tourPic" src="/static/campus/c6.jpg" alt="贵州电子科技职业学院校园航拍" loading="lazy" decoding="async">
+      <div class="tourShade"></div>
+      <div class="tourText">
+        <div class="tourKicker">贵州电子科技职业学院</div>
+        <div class="tourTitle">校园全景</div>
+        <div class="tourBtn">进入全景 ›</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<style>
+/* 右上角「关于」按钮 */
+.aboutBtn{
+  position: absolute; top: 12px; right: 12px; z-index: 5;
+  padding: 5px 11px; border-radius: 10px;
+  border: 1px solid rgba(20,60,110,.12);
+  background: rgba(255,255,255,.62);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  font: 700 11.5px/1 inherit; font-family: inherit;
+  color: #6a7f92; cursor: pointer;
+}
+html[data-theme="dark"] .aboutBtn{
+  border-color: rgba(255,255,255,.12);
+  background: rgba(255,255,255,.08);
+  color: #9db0c2;
+}
+.aboutBtn:active{ transform: scale(.96); }
+
+/* 弹窗 */
+.aboutMask{
+  position: fixed; inset: 0; z-index: 300;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(8,18,30,.45);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+}
+.aboutMask.on{ display: flex; }
+.aboutBox{
+  width: min(420px, 100%); max-height: 72vh; overflow: auto;
+  border-radius: 22px; padding: 20px;
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 30px 70px -28px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.9);
+  animation: aboutPop .34s cubic-bezier(.22,1,.36,1) both;
+  text-align: left;
+}
+html[data-theme="dark"] .aboutBox{ background: rgba(22,31,42,.96); }
+@keyframes aboutPop{
+  from{ opacity: 0; transform: translateY(14px) scale(.96); }
+  to  { opacity: 1; transform: none; }
+}
+.aboutHead{ display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.aboutHead h3{
+  margin: 0; font-size: 15px; font-weight: 850; letter-spacing: -.02em;
+  color: #26343f;
+}
+html[data-theme="dark"] .aboutHead h3{ color: #e6eff8; }
+.aboutClose{
+  margin-left: auto; width: 28px; height: 28px; border: 0; border-radius: 9px;
+  background: rgba(120,150,180,.14); color: #6a7f92;
+  font: 700 16px/1 inherit; font-family: inherit; cursor: pointer;
+}
+.aboutBody{ font-size: 11.5px; line-height: 1.85; color: #6a7f92; }
+html[data-theme="dark"] .aboutBody{ color: #93a7ba; }
+.aboutBody p{ margin: 0 0 9px; }
+.aboutBody p:last-child{ margin-bottom: 0; }
+.aboutBody b{ color: #3f566b; font-weight: 700; }
+html[data-theme="dark"] .aboutBody b{ color: #cfe0ee; }
+</style>
+<script>
+(function () {
+  var mask = document.getElementById('aboutMask');
+  var btn = document.getElementById('aboutBtn');
+  var close = document.getElementById('aboutClose');
+  if (!mask || !btn) return;
+  btn.onclick = function () { mask.classList.add('on'); };
+  if (close) close.onclick = function () { mask.classList.remove('on'); };
+  mask.addEventListener('click', function (e) {
+    if (e.target === mask) mask.classList.remove('on');
+  });
+})();
+</script>
+<style>
+/* ===== 校园全景入口 ===== */
+.tourSec{
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 18px 96px;
+}
+.tourInner{ width: min(360px, 100%); text-align: center; }
+.tourHint{
+  font: 700 10.5px/1 inherit; letter-spacing: .22em;
+  color: var(--ink3, #8f9fac); margin-bottom: 14px;
+  animation: tourFloat 2.4s ease-in-out infinite;
+}
+@keyframes tourFloat{
+  0%,100%{ transform: translateY(0); opacity: .55; }
+  50%    { transform: translateY(4px); opacity: 1; }
+}
+.tourCard{
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 16 / 10; border-radius: 20px; overflow: hidden;
+  cursor: pointer; background: #0d1620;
+  box-shadow: 0 18px 44px -20px rgba(10,30,50,.55);
+  transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+}
+.tourCard:active{ transform: scale(.985); }
+.tourPic{
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.tourShade{
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    rgba(6,16,28,.05) 0%,
+    rgba(6,16,28,.25) 52%,
+    rgba(6,16,28,.78) 100%);
+}
+.tourText{
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 16px 16px 15px; text-align: left; color: #fff;
+}
+.tourKicker{
+  font: 700 10.5px/1 inherit; letter-spacing: .06em;
+  color: rgba(255,255,255,.72); margin-bottom: 5px;
+}
+.tourTitle{
+  font: 850 18px/1.15 inherit; letter-spacing: -.02em; margin-bottom: 10px;
+  text-shadow: 0 2px 12px rgba(0,0,0,.4);
+}
+.tourBtn{
+  display: inline-flex; align-items: center;
+  padding: 8px 15px; border-radius: 99px;
+  background: rgba(255,255,255,.92); color: #16283a;
+  font: 800 12px/1 inherit;
+  box-shadow: 0 6px 18px -8px rgba(0,0,0,.6);
+}
+.tourTip{
+  margin-top: 12px; font: 600 10.5px/1.6 inherit;
+  color: var(--ink3, #8f9fac);
+}
+
+/* 全屏播放器 */
+.tourMask{
+  position: fixed; inset: 0; z-index: 400;
+  background: #05090e;
+  display: none;
+}
+.tourMask.on{ display: block; }
+.tourMask iframe{ width: 100%; height: 100%; border: 0; display: block; }
+.tourClose{
+  position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); right: 12px;
+  z-index: 2; width: 38px; height: 38px; border: 0; border-radius: 19px;
+  background: rgba(255,255,255,.16); color: #fff;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  font: 400 21px/1 inherit; cursor: pointer;
+}
+</style>
+<style>
+/* 航拍轮播：交叉淡入 + 模糊过渡 */
+.tourPic{
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  opacity: 0;
+  filter: blur(14px) saturate(115%);
+  transform: scale(1.06);
+  transition: opacity 1s ease, filter 1s ease, transform 1.4s ease;
+  will-change: opacity, filter, transform;
+}
+.tourPic.on{
+  opacity: 1;
+  filter: blur(0) saturate(100%);
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce){
+  .tourPic{ transition: opacity .3s linear; filter: none; transform: none; }
+}
+</style>
+<script>
+/* 六张航拍轮播：每 1 秒切一张 */
+(function () {
+  var pics = document.querySelectorAll('.tourPic');
+  if (pics.length < 2) return;
+  var i = 0, timer = null;
+  function step() {
+    pics[i].classList.remove('on');
+    i = (i + 1) % pics.length;
+    pics[i].classList.add('on');
+  }
+  function start() { if (!timer) timer = setInterval(step, 1000); }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  start();
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else start();
+  });
+})();
+</script>
+<script>
+/* 校园全景：同域整页打开，全屏无边框 */
+(function () {
+  var card = document.getElementById('tourCard');
+  if (!card) return;
+  function go() { location.href = '/tour/'; }
+  card.addEventListener('click', go);
+  card.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+  });
+})();
+</script>
+
+<div class="ktNotice" id="ktNotice" role="status">
+  <img class="knIcon" src="/static/school-logo-192.png" alt="">
+  <div class="knBody">
+    <div class="knTop"><b>功能上新！</b><span>刚刚</span></div>
+    <div class="knText">上滑查看全景图</div>
+  </div>
+</div>
+<style>
+/* ===== iOS 风格顶部通知 ===== */
+.ktNotice{
+  position: fixed; left: 10px; right: 10px; top: 8px;
+  z-index: 500;
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.86);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  backdrop-filter: blur(26px) saturate(190%);
+  box-shadow:
+    0 16px 40px -16px rgba(10,25,45,.45),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  opacity: 0;
+  transform: translateY(-130%) scale(.96);
+  transition: transform .55s cubic-bezier(.22,1.3,.36,1), opacity .35s ease;
+  pointer-events: none;
+}
+html[data-theme="dark"] .ktNotice{
+  background: rgba(30,38,50,.88);
+  box-shadow:
+    0 16px 40px -16px rgba(0,0,0,.7),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+.ktNotice.on{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.knIcon{
+  width: 38px; height: 38px; border-radius: 11px;
+  object-fit: cover; flex: none;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.knBody{ flex: 1; min-width: 0; }
+.knTop{
+  display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
+}
+.knTop b{
+  font-size: 13px; font-weight: 800; letter-spacing: -.01em;
+  color: #16283a;
+}
+html[data-theme="dark"] .knTop b{ color: #eaf2fa; }
+.knTop span{
+  font-size: 10.5px; color: #9aa9b7; margin-left: auto;
+}
+.knText{
+  font-size: 12.5px; color: #56697c; line-height: 1.4;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+html[data-theme="dark"] .knText{ color: #a7bacb; }
+
+@media (prefers-reduced-motion: reduce){
+  .ktNotice{ transition: opacity .2s linear; transform: none; }
+  .ktNotice.on{ transform: none; }
+}
+</style>
+<script>
+/* iOS 风格通知：进来自动弹下，4.6 秒后自动收，点一下滚到全景 */
+(function () {
+  var n = document.getElementById('ktNotice');
+  if (!n) return;
+  var hideTimer = null;
+
+  function show() {
+    n.classList.add('on');
+    hideTimer = setTimeout(hide, 4600);
+  }
+  function hide() {
+    n.classList.remove('on');
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+  }
+
+  n.addEventListener('click', function () {
+    hide();
+    var sec = document.getElementById('tourSec');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  /* 页面加载完再弹，别和首屏动画打架 */
+  window.addEventListener('load', function () {
+    setTimeout(show, 900);
+  });
+  /* 从后台回来时不再重复弹 */
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) hide();
+  });
+})();
+</script>
+<style>
+/* 苹果 logo 尺寸（之前被清理掉了，补回来） */
+.apple-img{
+  width: 13px; height: 16px;
+  object-fit: contain; flex: none; display: block;
+}
+html[data-theme="dark"] .apple-img{ filter: invert(1) brightness(1.15); }
+#ktChainHome .cl{ align-items: center; }
+</style>
+
+<style id="ktScrollFix">
+/* 允许整页纵向滚动：内容是两屏，必须能滑 */
+html{
+  height:auto !important; min-height:100% !important;
+  overflow-y:auto !important; overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch;
+}
+body{
+  height:auto !important; min-height:100% !important;
+  overflow:visible !important;
+  display:flex !important; flex-direction:column !important;
+  align-items:center !important; justify-content:flex-start !important;
+  padding-bottom:0 !important;
+}
+.phone{ margin:0 auto !important; flex:none !important; }
+</style>
+</body>
+</html>

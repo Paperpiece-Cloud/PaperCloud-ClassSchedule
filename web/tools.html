@@ -1,0 +1,2119 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>工具箱 · PaperCloud</title>
+<meta name="theme-color" content="#c9e3ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{
+  --ink:#16202c; --ink2:#5a6b7d; --ink3:#93a4b6;
+  --line:rgba(255,255,255,.75); --line2:rgba(255,255,255,.45);
+  --accent:#3d9df6; --ok:#12a05a; --warn:#e8a800; --bad:#f2555a; --leave:#8b7cff;
+  --r:16px; --r2:11px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --num:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+html[data-theme="dark"]{
+  --ink:#e9f1fa; --ink2:#a8bccf; --ink3:#7d8fa3;
+  --line:rgba(255,255,255,.16); --line2:rgba(255,255,255,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  font-family:var(--font);color:var(--ink);min-height:100vh;overflow-x:hidden;
+  padding-bottom:40px;-webkit-font-smoothing:antialiased;
+  background:linear-gradient(125deg,#c9e3ff 0%,#ded0ff 26%,#bff2dd 52%,#ffe4b8 76%,#c9e3ff 100%);
+  background-size:400% 400%;background-attachment:fixed;
+  animation:drift 22s ease-in-out infinite;
+}
+html[data-theme="dark"] body{
+  background:linear-gradient(125deg,#16283d 0%,#24203c 26%,#10312a 52%,#3a2c14 76%,#16283d 100%);
+  background-size:400% 400%;
+}
+@keyframes drift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media (prefers-reduced-motion:reduce){body{animation:none}}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.55);
+  -webkit-backdrop-filter:blur(24px) saturate(190%);backdrop-filter:blur(24px) saturate(190%);
+  border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+html[data-theme="dark"] .top{background:rgba(18,26,36,.62)}
+.topin{display:flex;align-items:center;gap:10px;
+  /* 和课表页 .head 完全一致 */
+  min-height:60px;padding-top:8px;padding-bottom:8px;flex-wrap:nowrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
+.mark{width:30px;height:30px;border-radius:9px;flex:none;
+  /* 和课表页一致：用站点图标，不用校徽 */
+  background:url('/favicon-192.png') center/cover no-repeat, var(--line);
+  border:1px solid var(--line);box-shadow:0 3px 10px rgba(20,50,90,.16)}
+html[data-theme='dark'] .mark{box-shadow:0 3px 12px rgba(0,0,0,.42)}
+.sp{flex:1}
+.ico{width:30px;height:30px;border-radius:9px;flex:none;display:inline-flex;
+  align-items:center;justify-content:center;font-size:13.5px;text-decoration:none;
+  cursor:pointer;border:1px solid var(--line);transition:transform .16s,box-shadow .2s}
+.ico:active{transform:scale(.93)}
+html:not([data-theme="dark"]) .ico{background:linear-gradient(180deg,#fff,#eef4fb);color:#2b3947;
+  box-shadow:inset 0 1px 0 #fff,0 4px 12px rgba(20,50,90,.12)}
+html[data-theme="dark"] .ico{background:linear-gradient(180deg,#3b4756,#26313d);color:#eaf2fb;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 4px 14px rgba(0,0,0,.4)}
+
+.card{border-radius:var(--r);padding:16px 17px;margin-bottom:13px;border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(26px) saturate(185%);backdrop-filter:blur(26px) saturate(185%)}
+html:not([data-theme="dark"]) .card{background:linear-gradient(180deg,rgba(255,255,255,.60),rgba(255,255,255,.38));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.98),0 14px 38px rgba(20,50,90,.12)}
+html[data-theme="dark"] .card{background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 14px 38px rgba(0,0,0,.44)}
+.card h2{font-size:12px;font-weight:800;color:var(--ink3);margin:0 0 12px;letter-spacing:.06em}
+
+/* 拖放区 */
+.drop{border:2px dashed var(--line);border-radius:14px;padding:30px 18px;text-align:center;
+  cursor:pointer;transition:all .2s}
+html:not([data-theme="dark"]) .drop{background:rgba(255,255,255,.35)}
+html[data-theme="dark"] .drop{background:rgba(255,255,255,.05)}
+.drop:hover,.drop.on{border-color:var(--accent);background:rgba(96,180,255,.12)}
+.drop .big{display:none}
+.drop .t1{font-size:14.5px;font-weight:700;margin-bottom:5px}
+.drop .t2{font-size:12.5px;color:var(--ink3);line-height:1.7}
+
+/* 文件行 */
+.frow{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:12px;
+  border:1px solid var(--line);margin-bottom:9px}
+html:not([data-theme="dark"]) .frow{background:rgba(255,255,255,.5)}
+html[data-theme="dark"] .frow{background:rgba(255,255,255,.06)}
+.frow .fi{font-size:21px;flex:none}
+.frow .fn{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.frow .fs{font-size:11.5px;color:var(--ink3);font-family:var(--num);flex:none}
+
+/* 分类 */
+.cat{border-radius:14px;border:1px solid var(--line);margin-bottom:10px;overflow:hidden;
+  transition:all .2s}
+html:not([data-theme="dark"]) .cat{background:rgba(255,255,255,.42)}
+html[data-theme="dark"] .cat{background:rgba(255,255,255,.055)}
+.cat-h{display:flex;flex-wrap:nowrap;align-items:center;gap:11px;padding:14px 16px;cursor:pointer;user-select:none;white-space:nowrap}
+.cat-h .ci{display:none}
+.cat-h .cn{flex:1;min-width:0;font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-h .cd{font-size:12px;color:var(--ink3);white-space:nowrap;flex:none}
+.cat-h .cx{font-size:12px;color:var(--ink3);transition:transform .25s}
+.cat.on .cat-h .cx{transform:rotate(90deg)}
+.cat-b{display:none;padding:0 16px 15px;border-top:1px solid var(--line2)}
+.cat.on .cat-b{display:block;animation:fade .25s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.tool{display:flex;gap:9px;flex-wrap:wrap;padding-top:13px;align-items:center}
+.tbtn{font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;
+  padding:9px 14px;border-radius:10px;border:1px solid var(--line);color:var(--ink);
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.6));
+  transition:all .16s}
+html[data-theme="dark"] .tbtn{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));color:#eaf2fb}
+.tbtn:hover{transform:translateY(-1px);border-color:var(--accent);
+  box-shadow:0 6px 18px rgba(40,120,220,.2)}
+.tbtn:active{transform:scale(.97)}
+.tbtn.pri{background:linear-gradient(180deg,#6cb8ff,#2a72dc);color:#fff;
+  border-color:rgba(255,255,255,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 22px rgba(40,120,220,.32)}
+.tbtn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+input,select{font-family:var(--font);font-size:14px;color:var(--ink);width:100%;
+  padding:10px 12px;border-radius:var(--r2);border:1px solid var(--line);outline:none}
+html:not([data-theme="dark"]) input,html:not([data-theme="dark"]) select{background:rgba(255,255,255,.46)}
+html[data-theme="dark"] input,html[data-theme="dark"] select{background:rgba(255,255,255,.09)}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(96,180,255,.22)}
+.bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.fld{margin-bottom:11px}
+.fld label{display:block;font-size:11.5px;font-weight:750;color:var(--ink3);margin-bottom:5px}
+.f2{display:flex;gap:9px;flex-wrap:wrap}
+.f2 > *{flex:1;min-width:120px}
+
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:750;
+  border:1px solid var(--line);color:var(--ink2)}
+html:not([data-theme="dark"]) .pill{background:rgba(255,255,255,.7)}
+html[data-theme="dark"] .pill{background:rgba(255,255,255,.11)}
+.big-code{font-family:var(--num);font-size:30px;font-weight:850;letter-spacing:.14em;
+  color:var(--accent);text-align:center;padding:14px 0 6px}
+.msg{font-size:12.5px;min-height:18px;margin-top:9px}
+.msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
+.empty{text-align:center;color:var(--ink3);padding:26px 10px;font-size:13.5px;line-height:1.8}
+.prog{height:6px;border-radius:3px;background:rgba(120,160,210,.25);overflow:hidden;margin-top:9px;display:none}
+.prog.on{display:block}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6cb8ff,#2a72dc);transition:width .3s}
+.foot{text-align:center;color:var(--ink3);font-size:11.5px;padding:22px 0 6px}
+
+@media (max-width:560px){
+  .cat-h .cd{display:none}
+  .cat-h .cx{display:none}
+}
+@media (max-width:640px){
+  .wrap{padding:0 12px}
+  .card{padding:14px;border-radius:14px}
+  .frow{flex-wrap:wrap}
+  .tbtn{flex:0 1 auto;text-align:center;padding:9px 12px;font-size:12.5px}
+}
+
+/* ---------- 置顶·音乐解锁 ---------- */
+.pin{position:relative;margin-top:16px;will-change:box-shadow;padding:0;overflow:visible;transition:margin-top .45s cubic-bezier(.4,0,.2,1);border-radius:var(--r);padding:16px 17px 14px;margin-bottom:15px;
+  border:2px solid rgba(255,190,90,.55);transition:box-shadow .5s,border-color .5s,transform .5s}
+html:not([data-theme="dark"]) .pin{background:linear-gradient(135deg,rgba(255,238,205,.92),rgba(255,215,235,.82),rgba(214,232,255,.9));
+  box-shadow:0 14px 40px rgba(230,150,60,.22)}
+html[data-theme="dark"]) .pin{background:linear-gradient(135deg,rgba(90,66,30,.55),rgba(84,40,64,.5),rgba(34,50,84,.55))}
+html[data-theme="dark"] .pin{background:linear-gradient(135deg,rgba(90,66,30,.55),rgba(84,40,64,.5),rgba(34,50,84,.55))}
+.pin.tip{margin-top:96px}
+.pin.lit{
+  border-color:#ffb547;
+  box-shadow:0 0 0 4px rgba(255,181,71,.3),0 16px 44px rgba(230,150,60,.34);
+  animation:pinGlow 2.4s ease-in-out infinite;
+}
+@keyframes pinGlow{
+  0%,100%{box-shadow:0 0 0 3px rgba(255,181,71,.24),0 14px 40px rgba(230,150,60,.28)}
+  50%    {box-shadow:0 0 0 11px rgba(255,181,71,.38),0 20px 58px rgba(230,150,60,.5)}
+ }
+  50%{box-shadow:0 0 0 10px rgba(255,181,71,.34),0 20px 58px rgba(230,150,60,.5)}}
+.pin .cn{display:flex;align-items:center;gap:8px}
+.pin .cat-b{border-top:1px solid var(--line2);padding:0 16px 14px}
+.pin .pind{margin:13px 0 0;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.pin .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.02em;
+  padding:3px 9px;border-radius:999px;color:#7a4a00;white-space:nowrap;
+  background:linear-gradient(90deg,#ffd88a,#ffb0d0)}
+html[data-theme="dark"] .pin .tag{color:#3a2400}
+.pin h3{margin:0 0 6px;font-size:17px;font-weight:850;letter-spacing:-.02em}
+.pin p{margin:0 0 12px;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+
+/* 弹出的小提示 */
+.pop{position:absolute;left:0;right:0;top:-14px;transform:translateY(-100%);z-index:60;
+  border-radius:14px;padding:13px 40px 13px 15px;font-size:13px;line-height:1.7;font-weight:600;
+  color:#4a2c00;opacity:0;pointer-events:none;transition:opacity .45s,transform .45s;
+  background:linear-gradient(135deg,#fff3d0,#ffe0ee,#dceaff);
+  border:1px solid rgba(255,190,90,.7);
+  box-shadow:0 16px 44px rgba(200,130,40,.3)}
+html[data-theme="dark"] .pop{color:#ffe8c0;
+  background:linear-gradient(135deg,#4a3418,#4a2338,#1e2a44);border-color:rgba(255,190,90,.45)}
+.pop.on{opacity:1;transform:translateY(calc(-100% - 6px));pointer-events:auto}
+.pop:after{content:'';position:absolute;left:26px;bottom:-8px;width:14px;height:14px;
+  transform:rotate(45deg);border-right:1px solid rgba(255,190,90,.7);
+  border-bottom:1px solid rgba(255,190,90,.7);
+  background:linear-gradient(135deg,#dceaff,#dceaff)}
+html[data-theme="dark"] .pop:after{background:linear-gradient(135deg,#1e2a44,#1e2a44)}
+.pop .x{position:absolute;right:9px;top:8px;width:24px;height:24px;border-radius:7px;border:0;
+  cursor:pointer;font-size:14px;line-height:1;color:inherit;background:rgba(255,255,255,.55)}
+html[data-theme="dark"] .pop .x{background:rgba(255,255,255,.14)}
+.pop .x:hover{background:rgba(255,255,255,.85)}
+
+/* ---------- 教程表 ---------- */
+.tut{margin-top:14px;border-radius:12px;padding:13px 14px;
+  border:1px solid var(--line);font-size:12.5px;line-height:1.85}
+html:not([data-theme="dark"]) .tut{background:rgba(255,255,255,.5)}
+html[data-theme="dark"] .tut{background:rgba(255,255,255,.06)}
+.tut h4{margin:0 0 9px;font-size:12.5px;font-weight:850;color:var(--ink2)}
+.tut table{width:100%;border-collapse:collapse;font-size:12px}
+.tut th,.tut td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line2)}
+.tut th{font-weight:800;color:var(--ink3);font-size:11px;letter-spacing:.04em}
+.tut td b{font-family:var(--num);font-size:11.5px}
+.tut .tip{margin-top:11px;padding:9px 11px;border-radius:9px;font-size:12px;line-height:1.8;
+  background:linear-gradient(135deg,rgba(255,238,205,.7),rgba(214,232,255,.7))}
+html[data-theme="dark"] .tut .tip{background:linear-gradient(135deg,rgba(90,66,30,.4),rgba(34,50,84,.4))}
+.tut ol{margin:6px 0 0;padding-left:19px}
+.tut li{margin-bottom:3px}
+.batch{font-size:12.5px;color:var(--ink2);line-height:2;
+  margin:12px 0 4px;padding-bottom:4px}
+.batch .pill{margin:0 3px 3px 0}
+.frow a.tbtn{text-decoration:none;display:inline-block}
+
+/* ---------- 大屏：不要一条道往下堆，改左右分栏 ---------- */
+.cols{display:block}
+@media (min-width:1080px){
+  /* 还没上传东西：单列、居中、别拉太宽 */
+  .cols{max-width:940px;margin:0 auto}
+  /* 点过工具、右栏有内容了：切成左右两栏 */
+  .wrap.two{max-width:1520px}
+  .wrap.two .cols{display:grid;max-width:none;margin:0;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+    gap:0 20px;align-items:start}
+  .col{min-width:0}
+  .cols > .col > *:last-child{margin-bottom:0}
+}
+@media (min-width:1420px){
+  .wrap.two .cols{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:0 24px}
+  .wrap.two{max-width:1600px}
+}
+
+html[data-theme="dark"] 
+
+/* ---------- 两个舞台：横向滑动，像翻页 ---------- */
+.stagewrap{position:relative;overflow:hidden}
+.stage{transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s;}
+.st1{transform:none;opacity:1}
+.st2{position:absolute;inset:0;transform:translateX(6%);opacity:0;
+     pointer-events:none;overflow-y:auto;max-height:100vh}
+.stagewrap.at2 .st1{transform:translateX(-6%);opacity:0;pointer-events:none;
+     /* 关键：必须脱离文档流，否则它的高度会把第二页顶下去，
+        看起来就是「上面空一大片」。 */
+     position:absolute;top:0;left:0;right:0}
+.stagewrap.at2 .st2{transform:none;opacity:1;pointer-events:auto;position:relative;
+     inset:auto;max-height:none}
+
+.s2bar{display:flex;align-items:center;gap:10px;margin:0 0 13px}
+.s2back{font-family:var(--font);font-size:13.5px;font-weight:750;cursor:pointer;
+  padding:9px 15px;border-radius:11px;border:1px solid var(--line);color:var(--ink);
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.62));
+  transition:all .16s}
+html[data-theme="dark"] .s2back{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));color:#eaf2fb}
+.s2back:hover{border-color:var(--accent);transform:translateX(-2px)}
+.s2title{font-size:15px;font-weight:800;letter-spacing:-.01em}
+
+/* ---------- 转换进度弹窗 ---------- */
+.runmask{
+  position:fixed; inset:0; z-index:900; display:none;
+  align-items:center; justify-content:center; padding:20px;
+  background:rgba(10,20,32,.42);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.runmask.on{display:flex; animation:rmIn .22s ease both}
+@keyframes rmIn{from{opacity:0}to{opacity:1}}
+
+.rundlg{
+  width:min(520px,100%); max-height:86vh; overflow:auto;
+  border-radius:18px; padding:20px 20px 16px;
+  border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(28px) saturate(180%); backdrop-filter:blur(28px) saturate(180%);
+  animation:rdIn .28s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes rdIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+html:not([data-theme="dark"]) .rundlg{
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.86));
+  box-shadow:inset 0 1.5px 0 #fff,0 24px 70px rgba(10,40,80,.3)}
+html[data-theme="dark"] .rundlg{
+  background:linear-gradient(180deg,rgba(38,48,62,.96),rgba(24,32,44,.96));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 70px rgba(0,0,0,.6)}
+
+.runhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.runspin{
+  width:17px;height:17px;flex:none;border-radius:50%;box-sizing:border-box;
+  border:2.5px solid rgba(120,170,230,.22);border-left-color:var(--accent);
+  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.runspin.done{animation:none;border-color:#34c072;border-top-color:#34c072;
+  background:#34c072;position:relative}
+.runspin.done:after{content:'';position:absolute;left:5px;top:2px;width:4px;height:8px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.runtitle{flex:1;font-size:15px;font-weight:800;letter-spacing:-.01em}
+.runpct{font-family:var(--num);font-size:17px;font-weight:850;color:var(--accent)}
+
+.runbar{height:11px;border-radius:6px;overflow:hidden;
+  background:rgba(120,160,210,.22);margin-bottom:13px}
+.runbar i{display:block;height:100%;width:0;border-radius:6px;
+  background:linear-gradient(90deg,#6cb8ff,#2a72dc);
+  transition:width .45s cubic-bezier(.4,0,.2,1)}
+.runbar.done i{background:linear-gradient(90deg,#7ee0a8,#34c072)}
+.runbar.err i{background:linear-gradient(90deg,#ff9a9d,#f2555a)}
+
+.runnow{font-size:13px;font-weight:700;margin-bottom:5px;min-height:19px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.runlog{max-height:180px;overflow:auto;margin:10px 0 4px;font-size:12px;line-height:1.95;
+  font-family:var(--num)}
+.runlog .li{display:flex;gap:8px;align-items:baseline;
+  padding:3px 8px;border-radius:7px;margin-bottom:2px}
+.runlog .li .s{flex:none;width:15px;text-align:center}
+.runlog .li .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.runlog .li.wait{color:var(--ink3)}
+.runlog .li.doing{color:var(--accent);font-weight:750;
+  background:rgba(96,180,255,.12)}
+.runlog .li.ok{color:var(--ok)}
+.runlog .li.bad{color:var(--bad)}
+
+.runfoot{display:flex;align-items:center;gap:12px;margin-top:12px;
+  padding-top:12px;border-top:1px solid var(--line2)}
+.runtime{flex:1;font-size:12px;color:var(--ink3);font-family:var(--num)}
+.runclose{font-family:var(--font);font-size:13.5px;font-weight:750;cursor:pointer;
+  padding:9px 20px;border-radius:11px;border:1px solid rgba(255,255,255,.5);color:#fff;
+  background:linear-gradient(180deg,#6cb8ff,#2a72dc);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 20px rgba(40,120,220,.3)}
+.runclose:hover{transform:translateY(-1px)}
+.runcancel{font-family:var(--font);font-size:13.5px;font-weight:750;cursor:pointer;
+  padding:9px 18px;border-radius:11px;border:1px solid var(--line);color:var(--ink2);
+  background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,.45))}
+html[data-theme="dark"] .runcancel{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.06));color:#c8d6e4}
+.runcancel:hover{border-color:var(--bad);color:var(--bad)}
+.runcancel:disabled{opacity:.45;cursor:not-allowed}
+.foot .disk{display:block;margin-top:7px;font-family:var(--num);
+  font-size:11px;color:var(--ink3);letter-spacing:.01em}
+.foot .disk b{color:var(--ink2);font-weight:750}
+.foot .disk .bar{display:inline-block;width:74px;height:5px;border-radius:3px;
+  vertical-align:middle;margin:0 6px;overflow:hidden;
+  background:rgba(120,160,210,.28)}
+.foot .disk .bar i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#6cb8ff,#2a72dc)}
+.foot .disk .bar.warn i{background:linear-gradient(90deg,#ffcc66,#ff9d2e)}
+.foot .disk .bar.bad i{background:linear-gradient(90deg,#ff9a9d,#f2555a)}
+.pkin{display:flex;gap:9px;align-items:center}
+.pkin input{flex:1;font-family:var(--num);letter-spacing:.16em;text-transform:uppercase;
+  font-size:15px;font-weight:700;text-align:center}
+.pkin .tbtn{flex:none;padding:10px 22px}
+#pkList{margin-top:6px}
+#pkList .frow{margin-top:7px}
+
+/* ---------- 工具分类：卡片网格 ---------- */
+.cat-h{
+  display:flex;flex-wrap:nowrap;align-items:center;gap:12px;
+  padding:13px 15px;cursor:pointer;user-select:none;white-space:nowrap;
+  border-radius:13px;transition:background .18s,border-color .18s;
+}
+html:not([data-theme="dark"]) .cat-h:hover{background:rgba(255,255,255,.55)}
+html[data-theme="dark"] .cat-h:hover{background:rgba(255,255,255,.07)}
+
+/* 分类图标块 */
+.cat-h .ci{
+  width:42px;height:42px;flex:none;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(235,243,255,.7));
+  border:1px solid var(--line);box-shadow:0 3px 10px rgba(20,50,90,.1)}
+html[data-theme="dark"] .cat-h .ci{
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+  box-shadow:0 3px 12px rgba(0,0,0,.4)}
+
+.cat-h .cnbox{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cat-h .cnbox b{font-size:16px;font-weight:850;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-h .cnbox em{font-size:11.5px;font-style:normal;color:var(--ink3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 右边胶囊 */
+.cat-h .cpill{
+  flex:none;font-size:11px;font-weight:750;padding:4px 11px;border-radius:999px;
+  color:#3b5fbf;background:rgba(96,150,255,.16);border:1px solid rgba(96,150,255,.26)}
+html[data-theme="dark"] .cat-h .cpill{
+  color:#a8c6ff;background:rgba(96,150,255,.2);border-color:rgba(96,150,255,.32)}
+
+.cat-h .cx{flex:none;font-size:17px;color:var(--ink3);transition:transform .25s;line-height:1}
+.cat.on .cat-h .cx{transform:rotate(90deg)}
+
+.cat-b{display:none;padding:2px 15px 15px}
+.cat.on .cat-b{display:block;animation:fade .25s ease both}
+
+/* 卡片网格 */
+.tgrid{display:grid;gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(228px,1fr))}
+@media (max-width:560px){
+  .tgrid{grid-template-columns:1fr;gap:8px}
+}
+
+.tcard{
+  display:flex;align-items:flex-start;gap:10px;text-align:left;
+  font-family:var(--font);cursor:pointer;padding:11px 12px;
+  border-radius:12px;border:1px solid var(--line);
+  transition:transform .16s,border-color .16s,box-shadow .16s,background .16s}
+html:not([data-theme="dark"]) .tcard{
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.46))}
+html[data-theme="dark"] .tcard{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035))}
+.tcard:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 8px 22px rgba(40,120,220,.2)}
+.tcard:active{transform:scale(.98)}
+
+.tcard .ti{
+  width:34px;height:34px;flex:none;border-radius:9px;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(238,245,255,.75));
+  border:1px solid var(--line)}
+html[data-theme="dark"] .tcard .ti{
+  background:linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,.05))}
+
+.tcard .tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tcard .tt b{
+  font-size:13.5px;font-weight:800;color:var(--ink);letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .tt em{
+  font-size:11.5px;font-style:normal;color:var(--ink3);line-height:1.45;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 分类介绍弹窗 */
+.cpill.intro{cursor:pointer;color:#7a4a00;background:linear-gradient(90deg,#ffd88a,#ffb0d0);
+  border-color:rgba(255,180,120,.6)}
+.cpill.intro:hover{transform:translateY(-1px)}
+html[data-theme="dark"] .cpill.intro{color:#3a2400}
+
+.intromask{position:fixed;inset:0;z-index:2147483500;display:none;align-items:center;
+  justify-content:center;padding:22px;background:rgba(10,20,32,.42);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.intromask.on{display:flex}
+.introbox{width:min(460px,100%);border-radius:18px;padding:20px;border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%)}
+html:not([data-theme="dark"]) .introbox{
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.9));
+  box-shadow:0 24px 70px rgba(10,40,80,.3)}
+html[data-theme="dark"] .introbox{
+  background:linear-gradient(180deg,rgba(38,48,62,.97),rgba(24,32,44,.97));
+  box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.introhead{font-size:16px;font-weight:850;margin-bottom:11px;letter-spacing:-.01em}
+.introbody{font-size:13.5px;line-height:1.95;color:var(--ink2)}
+.introok{margin-top:16px;width:100%;font-family:var(--font);font-size:14px;font-weight:750;
+  cursor:pointer;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,.5);
+  color:#fff;background:linear-gradient(180deg,#6cb8ff,#2a72dc);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 20px rgba(40,120,220,.28)}
+.introok:hover{transform:translateY(-1px)}
+
+/* ---------- AI 板块 ---------- */
+.beta{display:inline-block;font-size:9.5px;font-weight:850;letter-spacing:.06em;
+  padding:1px 6px;border-radius:5px;margin-left:5px;vertical-align:middle;
+  color:#fff;background:linear-gradient(135deg,#8b5cf6,#6366f1)}
+.airow{display:flex;align-items:center;gap:10px;margin:12px 0 0}
+.ailab{font-size:12px;font-weight:750;color:var(--ink3);flex:none}
+.airow select{flex:1;max-width:260px}
+
+.aidrop{margin-top:11px;border:2px dashed var(--line);border-radius:13px;padding:20px 16px;
+  text-align:center;transition:all .18s}
+html:not([data-theme="dark"]) .aidrop{background:rgba(255,255,255,.35)}
+html[data-theme="dark"] .aidrop{background:rgba(255,255,255,.05)}
+.aidrop.on{border-color:var(--accent);background:rgba(96,180,255,.12)}
+.aidrop .t1{font-size:14px;font-weight:700;margin-bottom:5px}
+.aidrop .t2{font-size:11.5px;color:var(--ink3);line-height:1.7}
+.aibtns{display:flex;gap:9px;justify-content:center;margin-top:13px}
+.aibtn{font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;
+  padding:9px 18px;border-radius:10px;border:1px solid var(--line);color:var(--ink);
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.6))}
+html[data-theme="dark"] .aibtn{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));color:#eaf2fb}
+.aibtn:hover{transform:translateY(-1px);border-color:var(--accent)}
+
+.aithumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:11px}
+.aithumbs .th{position:relative;border-radius:9px;overflow:hidden;border:1px solid var(--line);
+  aspect-ratio:1;background:rgba(120,160,210,.15)}
+.aithumbs .th img{width:100%;height:100%;object-fit:cover;display:block}
+.aithumbs .th .x{position:absolute;right:3px;top:3px;width:19px;height:19px;border-radius:6px;
+  border:0;cursor:pointer;font-size:12px;line-height:1;color:#fff;background:rgba(0,0,0,.55)}
+.aithumbs .th .n{position:absolute;left:3px;bottom:3px;font-size:10px;color:#fff;
+  background:rgba(0,0,0,.5);padding:0 5px;border-radius:4px}
+
+.aiout{margin-top:14px;font-size:13.5px;line-height:1.95;display:none}
+.aiout.on{display:block}
+.aiout h3{font-size:14px;font-weight:850;margin:16px 0 7px;padding-left:9px;
+  border-left:3px solid var(--accent)}
+.aiout h3:first-child{margin-top:0}
+.aiout p{margin:0 0 9px;color:var(--ink2)}
+.aiout ul,.aiout ol{margin:0 0 10px;padding-left:21px;color:var(--ink2)}
+.aiout li{margin-bottom:5px}
+.aiout code{font-family:var(--num);font-size:12px;background:rgba(120,160,210,.18);
+  padding:1px 5px;border-radius:4px}
+.aiout .aifoot{margin-top:14px;padding-top:11px;border-top:1px solid var(--line2);
+  font-size:11.5px;color:var(--ink3);font-family:var(--num)}
+#aiGrade:invalid, #aiGrade[value=""]{color:var(--ink3)}
+
+/* 顶栏：和课表页一个比例 */
+.brand .bname{letter-spacing:-.02em}
+.brand .byline{
+  font-size:10.5px;font-weight:700;color:var(--ink3);white-space:nowrap;
+  padding:2px 7px;border-radius:999px;
+  border:1px solid var(--line);letter-spacing:.01em}
+html:not([data-theme="dark"]) .brand .byline{background:rgba(255,255,255,.5)}
+html[data-theme="dark"] .brand .byline{background:rgba(255,255,255,.08)}
+@media (max-width:420px){
+  .brand .byline{display:none}
+  .brand .mark{width:26px;height:26px}
+}
+@media (max-width:380px){
+  .brand{font-size:15.5px}
+  .brand .mark{width:23px;height:23px}
+}
+
+/* AI 状态行 */
+.aistat{margin-top:12px;font-size:12.5px;font-weight:700;min-height:18px;
+  display:flex;align-items:center;gap:6px}
+.aistat .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--ink3)}
+.aistat.ok{color:var(--ok)} .aistat.ok .dot{background:var(--ok);
+  box-shadow:0 0 0 3px rgba(18,160,90,.18);animation:aisPulse 2s ease-in-out infinite}
+.aistat.bad{color:var(--bad)} .aistat.bad .dot{background:var(--bad)}
+.aistat.wait{color:var(--ink3)}
+@keyframes aisPulse{0%,100%{box-shadow:0 0 0 3px rgba(18,160,90,.16)}
+  50%{box-shadow:0 0 0 6px rgba(18,160,90,.06)}}
+
+/* 思考面板 */
+.ailog{margin-top:12px;display:none;border-radius:12px;padding:11px 13px;
+  border:1px solid var(--line);font-size:12.5px;line-height:1.9}
+.ailog.on{display:block}
+html:not([data-theme="dark"]) .ailog{background:rgba(255,255,255,.42)}
+html[data-theme="dark"] .ailog{background:rgba(255,255,255,.05)}
+.ailog .s{display:flex;align-items:flex-start;gap:8px;
+  animation:aiIn .32s cubic-bezier(.4,0,.2,1) both}
+@keyframes aiIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ailog .s .ic{flex:none;width:15px;text-align:center;font-size:11px;line-height:1.9}
+.ailog .s .tx{flex:1;min-width:0;word-break:break-word}
+.ailog .s.done .ic{color:var(--ok)} .ailog .s.done .tx{color:var(--ink2)}
+.ailog .s.run .ic{color:var(--accent)} .ailog .s.run .tx{color:var(--accent);font-weight:750}
+.ailog .s.wait .ic,.ailog .s.wait .tx{color:var(--ink3)}
+.ailog .s.bad .ic,.ailog .s.bad .tx{color:var(--bad)}
+.ailog .s .spin{display:inline-block;width:9px;height:9px;border-radius:50%;
+  border:1.5px solid rgba(120,170,230,.3);border-left-color:var(--accent);
+  animation:spin .8s linear infinite;vertical-align:middle;margin-right:2px}
+
+/* 依赖缺失的工具：灰掉，点不了 */
+.tcard.noavail{opacity:.45;cursor:not-allowed}
+.tcard.noavail:hover{transform:none;border-color:var(--line);box-shadow:none}
+.tcard.noavail .tt em{color:var(--bad)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap topin">
+    <div class="brand"><i class="mark"></i><span class="bname">工具箱</span><span class="byline">By Paperpiece</span></div>
+    <div class="sp"></div>
+    <button class="ico" id="themeBtn" title="切换主题" type="button">◐</button>
+    <a class="ico" href="/" title="返回首页">←</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="stagewrap">
+
+    <section class="stage st1 on" id="st1">
+<div class="col">
+
+<div class="pin cat" id="hlUnlock">
+    <div class="pop" id="popUnlock">
+      可以解除网易云音乐、QQ音乐、酷狗音乐等所有音乐的音频限制，转化成标准所有播放器都能播放的格式。
+      <button class="x" id="popX" type="button" aria-label="关闭">✕</button>
+    </div>
+
+    <div class="cat-h">
+      <span class="cn">音乐解锁 <span class="tag">置顶 · 引入最自豪的开源项目</span></span>
+      <span class="cd">网易云 / QQ / 酷狗 / 酷我 / 虾米</span>
+      <span class="cx">▶</span>
+    </div>
+
+    <div class="cat-b">
+      <p class="pind">网易云 / QQ音乐 / 酷狗 / 酷我 / 虾米 下载的加密文件，拖进来直接还原成能播的 MP3 / FLAC。</p>
+      <div class="tool">
+        <button class="tbtn pri" data-op="unlock" data-needs="unlock_ncm" type="button">开始解锁</button>
+      </div>
+
+      <div class="tut">
+        <h4>各平台文件格式对照</h4>
+        <table>
+          <tr><th>平台</th><th>下载到的文件</th><th>解锁后</th></tr>
+          <tr><td>网易云音乐</td><td><b>.ncm</b></td><td>MP3 或 FLAC</td></tr>
+          <tr><td>QQ音乐（普通）</td><td><b>.qmc0 .qmc3</b></td><td>MP3</td></tr>
+          <tr><td>QQ音乐（无损）</td><td><b>.qmcflac .qmcogg</b></td><td>FLAC / OGG</td></tr>
+          <tr><td>QQ音乐（新版）</td><td><b>.mflac .mgg .mgg1</b></td><td>FLAC / OGG</td></tr>
+          <tr><td>酷狗音乐</td><td><b>.kgm .kgma .kgg</b></td><td>MP3 或 FLAC</td></tr>
+          <tr><td>酷狗（缓存）</td><td><b>.vpr</b></td><td>MP3</td></tr>
+          <tr><td>酷我音乐</td><td><b>.kwm</b></td><td>MP3 或 FLAC</td></tr>
+          <tr><td>虾米音乐</td><td><b>.xm</b></td><td>MP3</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="catCard">
+  <h2>常用</h2>
+
+    <div class="cat" data-c="audio">
+      <div class="cat-h">
+        <span class="ci">🎵</span>
+        <span class="cnbox"><b>音频处理</b><em>转码、分割、调音量、提取音轨</em></span>
+        <span class="cpill intro" data-intro="audio">分类介绍 ›</span>
+        <span class="cpill">12 个工具</span>
+        <span class="cx">›</span>
+      </div>
+      <div class="cat-b">
+        <div class="tgrid">
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="mp3" type="button"><span class="ti">📻</span><span class="tt"><b>转 MP3</b><em>最常见，哪都能放</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="wav" type="button"><span class="ti">🎚</span><span class="tt"><b>转 WAV</b><em>未压缩，适合再编辑</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="flac" type="button"><span class="ti">💿</span><span class="tt"><b>转 FLAC</b><em>无损压缩，体积减半</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="aac" type="button"><span class="ti">🍎</span><span class="tt"><b>转 AAC / M4A</b><em>苹果设备常用</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="ogg" type="button"><span class="ti">🎧</span><span class="tt"><b>转 OGG</b><em>开源格式，体积小</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="opus" type="button"><span class="ti">🚀</span><span class="tt"><b>转 OPUS</b><em>同码率下音质最好</em></span></button>
+          <button class="tcard" data-op="audio" data-needs="audio" data-fmt="wma" type="button"><span class="ti">🪟</span><span class="tt"><b>转 WMA</b><em>Windows 老格式</em></span></button>
+          <button class="tcard" data-op="cut" type="button"><span class="ti">✂</span><span class="tt"><b>分割</b><em>按时间段切出一段</em></span></button>
+          <button class="tcard" data-op="volume" type="button"><span class="ti">🔊</span><span class="tt"><b>调音量</b><em>放大或压低</em></span></button>
+          <button class="tcard" data-op="extract" data-needs="video" type="button"><span class="ti">🎬</span><span class="tt"><b>提取音轨</b><em>把视频里的声音抽出来</em></span></button>
+          <button class="tcard" data-op="merge" type="button"><span class="ti">➕</span><span class="tt"><b>合并</b><em>多段拼成一段</em></span></button>
+          <button class="tcard" data-op="speed" type="button"><span class="ti">⏩</span><span class="tt"><b>变速</b><em>变快或变慢，音调不变</em></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat" data-c="video">
+      <div class="cat-h">
+        <span class="ci">🎬</span>
+        <span class="cnbox"><b>视频处理</b><em>转码、压缩、分割、调音量</em></span>
+        <span class="cpill intro" data-intro="video">分类介绍 ›</span>
+        <span class="cpill">11 个工具</span>
+        <span class="cx">›</span>
+      </div>
+      <div class="cat-b">
+        <div class="tgrid">
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="mp4" type="button"><span class="ti">📺</span><span class="tt"><b>转 MP4</b><em>兼容性最好</em></span></button>
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="mkv" type="button"><span class="ti">📦</span><span class="tt"><b>转 MKV</b><em>封装灵活，多音轨</em></span></button>
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="avi" type="button"><span class="ti">📼</span><span class="tt"><b>转 AVI</b><em>老播放器也能放</em></span></button>
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="mov" type="button"><span class="ti">🎞</span><span class="tt"><b>转 MOV</b><em>苹果生态原生</em></span></button>
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="webm" type="button"><span class="ti">🌐</span><span class="tt"><b>转 WEBM</b><em>网页视频首选</em></span></button>
+          <button class="tcard" data-op="video" data-needs="video" data-fmt="gif" type="button"><span class="ti">🎞</span><span class="tt"><b>转 GIF</b><em>做表情包、短动图</em></span></button>
+          <button class="tcard" data-op="compress" type="button"><span class="ti">🗜</span><span class="tt"><b>压缩体积</b><em>降码率，文件更小</em></span></button>
+          <button class="tcard" data-op="cut" type="button"><span class="ti">✂</span><span class="tt"><b>分割</b><em>截取其中一段</em></span></button>
+          <button class="tcard" data-op="volume" type="button"><span class="ti">🔊</span><span class="tt"><b>调音量</b><em>放大或压低</em></span></button>
+          <button class="tcard" data-op="speed" type="button"><span class="ti">⏩</span><span class="tt"><b>变速</b><em>变快或变慢</em></span></button>
+          <button class="tcard" data-op="snapshot" type="button"><span class="ti">📷</span><span class="tt"><b>截图</b><em>在指定秒数存一张图</em></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat" data-c="image">
+      <div class="cat-h">
+        <span class="ci">🖼</span>
+        <span class="cnbox"><b>图片处理</b><em>转码、压缩、缩放、水印</em></span>
+        <span class="cpill intro" data-intro="image">分类介绍 ›</span>
+        <span class="cpill">13 个工具</span>
+        <span class="cx">›</span>
+      </div>
+      <div class="cat-b">
+        <div class="tgrid">
+          <button class="tcard" data-op="image" data-needs="image" data-fmt="jpg" type="button"><span class="ti">🖼</span><span class="tt"><b>转 JPG</b><em>照片通用格式</em></span></button>
+          <button class="tcard" data-op="image" data-needs="image" data-fmt="png" type="button"><span class="ti">🅿</span><span class="tt"><b>转 PNG</b><em>支持透明背景</em></span></button>
+          <button class="tcard" data-op="image" data-needs="image" data-fmt="webp" type="button"><span class="ti">⚡</span><span class="tt"><b>转 WEBP</b><em>体积小，网页首选</em></span></button>
+          <button class="tcard" data-op="image" data-needs="image" data-fmt="bmp" type="button"><span class="ti">🎨</span><span class="tt"><b>转 BMP</b><em>古老位图格式</em></span></button>
+          <button class="tcard" data-op="image" data-needs="image" data-fmt="tiff" type="button"><span class="ti">📄</span><span class="tt"><b>转 TIFF</b><em>印刷、扫描常用</em></span></button>
+          <button class="tcard" data-op="resize" type="button"><span class="ti">📐</span><span class="tt"><b>缩放尺寸</b><em>按最长边等比缩小</em></span></button>
+          <button class="tcard" data-op="compress" type="button"><span class="ti">🗜</span><span class="tt"><b>压缩体积</b><em>降质量换空间</em></span></button>
+          <button class="tcard" data-op="watermark" type="button"><span class="ti">💧</span><span class="tt"><b>加水印</b><em>右下角打上文字</em></span></button>
+          <button class="tcard" data-op="topdf" type="button"><span class="ti">📕</span><span class="tt"><b>转 PDF</b><em>单张图直接变 PDF</em></span></button>
+          <button class="tcard" data-op="rot" type="button"><span class="ti">🔄</span><span class="tt"><b>旋转 / 翻转</b><em>90°、180°、镜像</em></span></button>
+          <button class="tcard" data-op="gray" type="button"><span class="ti">⚫</span><span class="tt"><b>转黑白</b><em>转成灰度图</em></span></button>
+          <button class="tcard" data-op="square" type="button"><span class="ti">⬛</span><span class="tt"><b>裁成方图</b><em>居中裁方形，适合头像</em></span></button>
+          <button class="tcard" data-op="longimg" type="button"><span class="ti">📜</span><span class="tt"><b>拼长图</b><em>多张竖着拼成一张</em></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat" data-c="doc">
+      <div class="cat-h">
+        <span class="ci">📄</span>
+        <span class="cnbox"><b>文档处理</b><em>转 PDF、PDF 合并拆分</em></span>
+        <span class="cpill intro" data-intro="doc">分类介绍 ›</span>
+        <span class="cpill">8 个工具</span>
+        <span class="cx">›</span>
+      </div>
+      <div class="cat-b">
+        <div class="tgrid">
+          <button class="tcard" data-op="doc2pdf" data-needs="doc" type="button"><span class="ti">📝</span><span class="tt"><b>Office 转 PDF</b><em>Word / Excel / PPT</em></span></button>
+          <button class="tcard" data-op="topdf" type="button"><span class="ti">🖼</span><span class="tt"><b>图片转 PDF</b><em>多张图合成一份</em></span></button>
+          <button class="tcard" data-op="pdf2img" data-needs="pdf2img" type="button"><span class="ti">🔍</span><span class="tt"><b>PDF 转图片</b><em>每页导成 JPG</em></span></button>
+          <button class="tcard" data-op="pdfsplit" data-needs="pdf" type="button"><span class="ti">✂</span><span class="tt"><b>PDF 拆分</b><em>一页一个文件</em></span></button>
+          <button class="tcard" data-op="pdfmerge" data-needs="pdf" type="button"><span class="ti">🔗</span><span class="tt"><b>PDF 合并</b><em>两个 PDF 拼起来</em></span></button>
+          <button class="tcard" data-op="pdftext" data-needs="pdf" type="button"><span class="ti">📃</span><span class="tt"><b>PDF 提取文字</b><em>导成 txt，可搜索</em></span></button>
+          <button class="tcard" data-op="pdfenc" data-needs="pdf" type="button"><span class="ti">🔐</span><span class="tt"><b>PDF 加密</b><em>设打开密码</em></span></button>
+          <button class="tcard" data-op="pdfdec" data-needs="pdf" type="button"><span class="ti">🔓</span><span class="tt"><b>PDF 解密</b><em>去掉打开密码</em></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ================= 取件码 ================= -->
+    
+    <div class="cat" data-c="ai">
+      <div class="cat-h">
+        <span class="ci">🤖</span>
+        <span class="cnbox"><b>AI 批改</b><em>拍作文照片，自动给批改意见</em></span>
+        <span class="cpill intro" data-intro="ai">分类介绍 ›</span>
+        <span class="cpill">1 个工具</span>
+        <span class="cx">›</span>
+      </div>
+      <div class="cat-b">
+        <div class="tgrid">
+          <button class="tcard" data-op="essay" type="button">
+            <span class="ti">📝</span>
+            <span class="tt"><b>识图批改作文 <span class="beta">Beta</span></b>
+            <em>拍照 → 识别文字 → 给出批改意见和评语</em></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="pickupCard">
+      <h2>取件码取回文件</h2>
+      <div class="pkin">
+        <input type="text" id="pkCode" placeholder="输入 6 位取件码，例如 5B3833"
+               maxlength="12" autocomplete="off" spellcheck="false">
+        <button class="tbtn pri" id="pkGo" type="button">取回</button>
+      </div>
+      <div class="msg" id="pkMsg"></div>
+      <div id="pkList"></div>
+    </div>
+
+  </section><!-- /st1 -->
+
+  <!-- ================= 舞台 2：上传与处理 ================= -->
+  <section class="stage st2" id="st2">
+    <div class="s2bar">
+      <button class="s2back" id="s2back" type="button">← 返回</button>
+      <span class="s2title" id="s2title">处理文件</span>
+    </div>
+
+    <div class="card" id="pickCard" style="display:none">
+      <h2>选择文件</h2>
+      <div class="drop" id="drop">
+        <div class="t1">拖入文件，或点击选择</div>
+        <div class="t2">一次最多 100 个 · 单个不超过 100MB · 服务器上保留 3 天<br>
+          音频 视频 图片 文档 PDF 音乐加密文件</div>
+      </div>
+      <input type="file" id="fileInput" multiple style="display:none">
+      <div class="prog" id="prog"><i></i></div>
+      <div class="prog" id="upProg" style="display:none"><i></i></div>
+      <div class="msg" id="upMsg"></div>
+    </div>
+
+    <div class="card" id="codeCard" style="display:none">
+      <h2>提取码</h2>
+      <div class="big-code" id="codeShow">------</div>
+      <div class="empty" style="padding:6px 10px">3 天内凭这个码可以重复下载</div>
+      <div class="bar" style="margin:12px 0 0">
+        <button class="tbtn" id="btnCopyCode" type="button">复制提取码</button>
+        <button class="tbtn" id="btnMine" type="button">我上传的</button>
+      </div>
+    </div>
+
+    <div class="card" id="workCard" style="display:none">
+      <h2>选择操作</h2>
+      <div id="curFile"></div>
+      <div id="opArea"></div>
+      <div class="bar" style="margin:14px 0 0">
+        <button class="tbtn pri" id="btnRun" type="button">上传并转换</button>
+          <button class="tbtn" id="btnNew" type="button">换文件</button>
+      </div>
+      <div class="prog" id="runProg"><i></i></div>
+      <div class="msg" id="runMsg"></div>
+    </div>
+
+    
+    <div class="card" id="aiPane" style="display:none">
+      <h2>识图批改作文</h2>
+<div class="airow">
+        <label class="ailab">年级</label>
+        <select id="aiGrade"></select>
+      </div>
+
+      <div class="aidrop" id="aiDrop">
+        <div class="t1">拍照片，或从相册选</div>
+        <div class="t2">最多 10 张 · 建议横着拍、字拍清楚 · JPG / PNG</div>
+        <div class="aibtns">
+          <button class="aibtn" id="aiCam" type="button">📷 拍照</button>
+          <button class="aibtn" id="aiPic" type="button">🖼 相册</button>
+        </div>
+      </div>
+      <input type="file" id="aiCamInput" accept="image/*" capture="environment" style="display:none">
+      <input type="file" id="aiPicInput" accept="image/*" multiple style="display:none">
+
+      <div id="aiThumbs" class="aithumbs"></div>
+      <div class="prog" id="aiProg"><i></i></div>
+      <div class="msg" id="aiMsg"></div>
+
+      <div class="aistat" id="aiStat"><span class="dot"></span>正在检查 DeepSeek API…</div>
+
+      <div class="bar" style="margin:8px 0 0">
+        <button class="tbtn pri" id="aiGo" type="button">开始批改</button>
+        <button class="tbtn" id="aiClear" type="button">清空图片</button>
+      </div>
+
+      <div class="ailog" id="aiLog"></div>
+        <div id="aiOut" class="aiout"></div>
+      </div>
+    </div>
+  
+    </div>
+
+    <div class="card" id="outCard" style="display:none">
+      <h2>下载结果</h2>
+      <div id="outList"></div>
+    </div>
+  </section><!-- /st2 -->
+
+  </div><!-- /stagewrap -->
+
+
+  <div class="foot" id="ktFoot">
+    PaperCloud 工具箱
+    <span class="disk" id="diskInfo"></span>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  
+  var $ = function (id) { return document.getElementById(id); };
+  var MAXN = 100;
+  var S = { code: '', files: [], picked: [], uploaded: false, kind: '', op: null, fmt: null };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function size(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+  function msg(id, t, ok) {
+    var e = $(id); if (!e) return;
+    e.className = 'msg ' + (ok ? 'ok' : 'err');
+    e.textContent = t || '';
+  }
+  function prog(id, pct) {
+    var e = $(id); if (!e) return;
+    e.classList.toggle('on', pct >= 0);
+    var i = e.querySelector('i');
+    if (i) i.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  }
+
+  /* ---------------- 主题 ---------------- */
+  (function () {
+    var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    function resolve(pref) {
+      if (pref === 'auto' || !pref) return (mq && mq.matches) ? 'dark' : 'light';
+      return pref === 'dark' ? 'dark' : 'light';
+    }
+    var pref = 'auto';
+    try { pref = localStorage.getItem('kt_theme') || 'auto'; } catch (e) { }
+    function apply() {
+      document.documentElement.setAttribute('data-theme', resolve(pref));
+    }
+    apply();
+    // 系统主题变了也跟着变（只在「跟随系统」时生效）
+    if (mq && mq.addEventListener) mq.addEventListener('change', function () { if (pref === 'auto' || !pref) apply(); });
+    else if (mq && mq.addListener) mq.addListener(function () { if (pref === 'auto' || !pref) apply(); });
+    $('themeBtn').onclick = function () {
+      var order = ['auto', 'light', 'dark'];
+      var i = order.indexOf(pref); if (i < 0) i = 0;
+      pref = order[(i + 1) % 3];
+      try { localStorage.setItem('kt_theme', pref); } catch (e) { }
+      apply();
+      var lbl = { auto: '跟随系统', light: '浅色', dark: '深色' }[pref];
+      var b = $('themeBtn');
+      if (b) { b.title = lbl; b.textContent = pref === 'dark' ? '☾' : (pref === 'light' ? '☀' : '◐'); }
+    };
+  })();
+
+  /* ---------------- 置顶卡片：高亮 + 弹窗 ---------------- */
+  (function () {
+    var pin = $('hlUnlock'), pop = $('popUnlock');
+    if (!pin || !pop) return;
+    var seen = false;
+    try { seen = localStorage.getItem('kt_unlock_tip') === '1'; } catch (e) { }
+    setTimeout(function () {
+      pin.classList.add('lit');
+      if (!seen) { pop.classList.add('on'); pin.classList.add('tip'); }
+    }, 700);
+    function close() {
+      pop.classList.remove('on');
+      pin.classList.remove('tip');
+      try { localStorage.setItem('kt_unlock_tip', '1'); } catch (e) { }
+    }
+    var x = $('popX');
+    if (x) x.onclick = function (e) { e.stopPropagation(); close(); };
+    setTimeout(function () { if (pop.classList.contains('on')) close(); }, 5000);
+  })();
+
+  /* ---------------- 分类展开（置顶卡也是 .cat） ---------------- */
+  document.querySelectorAll('.cat-h').forEach(function (h) {
+    h.onclick = function () { h.parentNode.classList.toggle('on'); };
+  });
+
+
+
+
+  /* ---------------- 转换进度弹窗 ---------------- */
+  var RM = { t0: 0, tick: null, total: 0, ac: null, cancelled: false };
+
+  function rmOpen(total, title) {
+    RM.t0 = Date.now(); RM.total = total;
+    RM.cancelled = false;
+    try { RM.ac = new AbortController(); } catch (e) { RM.ac = null; }
+    var cb = $('runCancel');
+    if (cb) { cb.disabled = false; cb.style.display = ''; cb.textContent = '取消'; }
+    $('runMask').classList.add('on');
+    $('runTitle').textContent = title || '正在转换';
+    $('runSpin').className = 'runspin';
+    $('runPct').textContent = '0%';
+    $('runBar').style.width = '0%';
+    $('runBar').parentNode.className = 'runbar';
+    $('runNow').textContent = '准备中…';
+    $('runClose').style.display = 'none';
+    $('runLog').innerHTML = '';
+    if (RM.tick) clearInterval(RM.tick);
+    RM.tick = setInterval(function () {
+      $('runTime').textContent = '已用 ' + ((Date.now() - RM.t0) / 1000).toFixed(1) + ' 秒';
+    }, 100);
+  }
+
+  function rmList(names) {
+    $('runLog').innerHTML = names.map(function (n, i) {
+      return '<div class="li wait" id="li' + i + '">' +
+        '<span class="s">·</span><span class="n">' + esc(n) + '</span></div>';
+    }).join('');
+  }
+
+  function rmMark(i, state, note) {
+    var e = $('li' + i);
+    if (!e) return;
+    e.className = 'li ' + state;
+    var ic = { wait: '·', doing: '▶', ok: '✓', bad: '✕' }[state] || '·';
+    e.querySelector('.s').textContent = ic;
+    if (note) e.querySelector('.n').textContent = note;
+    e.scrollIntoView({ block: 'nearest' });
+  }
+
+  function rmProgress(pct, nowText) {
+    pct = Math.max(0, Math.min(100, pct));
+    $('runBar').style.width = pct + '%';
+    $('runPct').textContent = Math.round(pct) + '%';
+    if (nowText) $('runNow').textContent = nowText;
+  }
+
+  function rmClose(title, errs) {
+    if (RM.tick) { clearInterval(RM.tick); RM.tick = null; }
+    var cb = $('runCancel');
+    if (cb) cb.style.display = 'none';
+    $('runSpin').className = 'runspin done';
+    $('runTitle').textContent = title;
+    $('runNow').textContent = '';
+    $('runTime').textContent = '总用时 ' + ((Date.now() - RM.t0) / 1000).toFixed(1) + ' 秒';
+    $('runBar').parentNode.className = 'runbar ' + (errs ? 'err' : 'done');
+    $('runBar').style.width = '100%';
+    $('runPct').textContent = '100%';
+    $('runClose').style.display = '';
+  }
+
+  /* 弹窗的 HTML 在主脚本之后才解析，所以这里【不能】用 $('runClose').onclick
+     —— 那时元素还不存在，绑不上。改用事件委托，永远有效。 */
+  document.addEventListener('click', function (e) {
+    var el = e.target;
+    if (!el || !el.id) return;
+    if (el.id === 'runClose') {
+      var m = $('runMask');
+      if (m) m.classList.remove('on');
+      // 关掉弹窗后，把取件码和下载区亮出来
+      var cc = $('codeCard'), oc = $('outCard');
+      if (cc) cc.style.display = '';
+      if (oc) {
+        oc.style.display = '';
+        oc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, true);
+
+  (function () {
+    var c = $('runCancel');
+    if (c) c.onclick = function () {
+      RM.cancelled = true;
+      if (RM.ac) { try { RM.ac.abort(); } catch (e) { } }
+      c.disabled = true; c.textContent = '已取消';
+      $('runNow').textContent = '已取消，剩下的文件不再处理';
+      if (typeof window.__ktAbortRun === 'function') window.__ktAbortRun();
+    };
+    // 转换途中不允许点遮罩关掉
+    var m = $('runMask');
+    if (m) m.onclick = function (e) {
+      if (e.target === m && $('runClose').style.display !== 'none') {
+        m.classList.remove('on');
+      }
+    };
+  })();
+
+  /* ---------------- 舞台切换：点工具滑到第二页 ---------------- */
+  function goStage(n, title) {
+    var w = document.querySelector('.stagewrap');
+    if (!w) return;
+    if (n === 2) {
+      if (title) $('s2title').textContent = title;
+      w.classList.add('at2');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      w.classList.remove('at2');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+  (function () {
+    var b = $('s2back');
+    if (b) b.onclick = function () { goStage(1); };
+  })();
+  window.__goStage = goStage;
+
+  /* ---------------- 大屏：右栏有内容才切两栏 ---------------- */
+  (function () {
+    var w = document.querySelector('.wrap');
+    var ids = ['pickCard', 'codeCard', 'workCard', 'outCard'];
+    function sync() {
+      var on = false;
+      for (var i = 0; i < ids.length; i++) {
+        var e = $(ids[i]);
+        if (e && e.style.display !== 'none') { on = true; break; }
+      }
+      if (w) w.classList.toggle('two', on);
+    }
+    sync();
+    if (window.MutationObserver) {
+      var mo = new MutationObserver(sync);
+      ids.forEach(function (id) {
+        var e = $(id);
+        if (e) mo.observe(e, { attributes: true, attributeFilter: ['style'] });
+      });
+    }
+    window.__syncCols = sync;
+  })();
+
+  /* ---------------- 类型判断 ---------------- */
+  var LOCKED = 'ncm qmc0 qmc3 qmcflac qmcogg qmc2 mflac mflac0 mgg mgg1 mggl kgm kgma kgg vpr kwm xm'.split(' ');
+  function kindOf(name) {
+    var e = (name.split('.').pop() || '').toLowerCase();
+    if (LOCKED.indexOf(e) >= 0) return 'locked';
+    if ('mp3 wav flac aac m4a ogg oga wma opus'.split(' ').indexOf(e) >= 0) return 'audio';
+    if ('mp4 mkv avi mov webm'.split(' ').indexOf(e) >= 0) return 'video';
+    if ('jpg jpeg png webp bmp gif tiff tif'.split(' ').indexOf(e) >= 0) return 'image';
+    if (e === 'pdf') return 'pdf';
+    if ('docx doc xlsx xls pptx ppt txt csv md'.split(' ').indexOf(e) >= 0) return 'doc';
+    return 'other';
+  }
+  var KIND_ICON = {};   // 不用图标，靠文件名后缀就够
+
+  /* ---------------- 工具按钮 ---------------- */
+  var FIT = {
+    audio: ['audio', 'locked'], extract: ['video'],
+    volume: ['audio', 'video'], cut: ['audio', 'video'],
+    video: ['video'], compress: ['video', 'image'], mute: ['video'],
+    frames: ['video'], image: ['image'], resize: ['image'], watermark: ['image'],
+    doc2pdf: ['doc'], topdf: ['image'], pdf2img: ['pdf'],
+    pdfsplit: ['pdf'], pdfmerge: ['pdf'], unlock: ['locked'],
+    merge: ['audio'], speed: ['audio', 'video'], snapshot: ['video'],
+    rot: ['image'], gray: ['image'], square: ['image'], longimg: ['image'],
+    pdftext: ['pdf'], pdfenc: ['pdf'], pdfdec: ['pdf'], essay: ['image']
+  };
+  function fitFiles(op) {
+    var f = FIT[op]; if (!f) return S.files.slice();
+    return S.files.filter(function (x) { return f.indexOf(x.kind) >= 0; });
+  }
+
+  document.querySelectorAll('[data-op]').forEach(function (b) {
+    b.onclick = function () {
+      var op0 = b.getAttribute('data-op');
+      var fmt0 = b.getAttribute('data-fmt');
+
+      // AI 批改走自己的一套界面，不需要先选文件
+      if (op0 === 'essay') {
+        $('pickCard').style.display = 'none';
+        $('codeCard').style.display = 'none';
+        $('workCard').style.display = 'none';
+        $('outCard').style.display = 'none';
+        $('aiPane').style.display = '';
+        if (window.__goStage) window.__goStage(2, '识图批改作文');
+        return;
+      }
+      $('aiPane').style.display = 'none';
+
+      if (!S.files.length) {
+        // 还没选文件：记住你要干什么，展开上传区，并【当场】把参数摆出来
+        S.pendingOp = op0; S.pendingFmt = fmt0;
+        openPick();
+        S.op = op0; S.fmt = fmt0;
+        showParams([]);
+        document.getElementById('workCard').style.display = '';
+        return;
+      }
+      $('aiPane').style.display = 'none';
+      var op = op0;
+      var usable = fitFiles(op);
+      if (!usable.length) {
+        msg('runMsg', '这个操作不适合已选的文件类型', false);
+        return;
+      }
+      S.op = op; S.fmt = b.getAttribute('data-fmt');
+      showParams(usable);
+      $('workCard').style.display = '';
+      if (window.__goStage) window.__goStage(2, opName(op, S.fmt));
+    };
+  });
+
+
+  /* ---------------- 上传区：默认收起，点工具才展开 ---------------- */
+  function openPick() {
+    $('pickCard').style.display = '';
+    // 取件码要等「查看结果」才出现，不要上传完就挂在上面
+    $('codeCard').style.display = 'none';
+    msg('upMsg', S.pendingOp
+      ? '选好文件就能直接开始「' + opName(S.pendingOp, S.pendingFmt) + '」'
+      : '', true);
+    // 立刻把参数摆出来，让人先看到能调什么
+    if (S.pendingOp) {
+      S.op = S.pendingOp; S.fmt = S.pendingFmt;
+      showParams([]);
+      $('workCard').style.display = '';
+    }
+    if (window.__goStage) window.__goStage(2, opName(S.pendingOp, S.pendingFmt));
+  }
+  function opName(op, fmt) {
+    var M = { unlock: '解锁音乐', audio: '转 ' + (fmt || '').toUpperCase(),
+      video: '转 ' + (fmt || '').toUpperCase(), image: '转 ' + (fmt || '').toUpperCase(),
+      extract: '提取音轨', volume: '调音量', cut: '分割', compress: '压缩',
+      mute: '静音', frames: '抽帧', resize: '缩放', watermark: '加水印',
+      topdf: '转 PDF', doc2pdf: '转 PDF', pdf2img: 'PDF 转图片',
+      pdfsplit: 'PDF 拆分', pdfmerge: 'PDF 合并',
+      merge: '音频合并', speed: '变速', snapshot: '截图',
+      rot: '旋转', gray: '转黑白', square: '裁方图', longimg: '拼长图',
+      pdftext: '提取文字', pdfenc: 'PDF 加密', pdfdec: 'PDF 解密' };
+    return M[op] || op;
+  }
+  // 上传完成后，如果之前点过工具就自动接上
+  function applyPending() {
+    if (!S.pendingOp) { renderFiles(); return; }
+    var op = S.pendingOp, fmt = S.pendingFmt;
+    S.pendingOp = S.pendingFmt = null;
+    var usable = fitFiles(op);
+    if (!usable.length) {
+      renderFiles();
+      msg('runMsg', '已上传的文件类型不适合刚才那个操作，请在下面重新选一个', false);
+      return;
+    }
+    S.op = op; S.fmt = fmt;
+    $('workCard').style.display = '';
+    showParams(usable);
+    if (window.__goStage) window.__goStage(2, opName(op, fmt));
+  }
+
+  /* ---------------- 参数区 ---------------- */
+  function showParams(usable) {
+    var op = S.op, h = '';
+    if (op === 'audio' || op === 'extract') {
+      h = '<div class="fld"><label>比特率</label><select id="p_br">' +
+        ['128k', '192k', '256k', '320k'].map(function (v) {
+          return '<option' + (v === '192k' ? ' selected' : '') + '>' + v + '</option>';
+        }).join('') + '</select></div>';
+    } else if (op === 'video') {
+      h = '<div class="f2">' +
+        '<div class="fld"><label>画质</label><select id="p_crf">' +
+        [['18', '高'], ['23', '标准'], ['28', '省空间'], ['32', '很小']].map(function (v) {
+          return '<option value="' + v[0] + '"' + (v[0] === '23' ? ' selected' : '') + '>' + v[1] + '</option>';
+        }).join('') + '</select></div>' +
+        '<div class="fld"><label>分辨率</label><select id="p_scale"><option value="">原样</option>' +
+        ['1920', '1280', '854', '640'].map(function (v) {
+          return '<option value="' + v + '">' + v + 'p 宽</option>';
+        }).join('') + '</select></div></div>';
+    } else if (op === 'compress') {
+      h = S.kind === 'image'
+        ? '<div class="fld"><label>质量</label><input type="range" id="p_q" min="30" max="95" value="75"><span class="pill" id="p_qv">75</span></div>'
+        : '<div class="fld"><label>画质</label><select id="p_crf">' +
+          [['23', '标准'], ['28', '省空间'], ['32', '很小'], ['36', '极小']].map(function (v) {
+            return '<option value="' + v[0] + '">' + v[1] + '</option>';
+          }).join('') + '</select></div>';
+    } else if (op === 'cut') {
+      h = '<div class="f2">' +
+        '<div class="fld"><label>从第几秒开始</label><input type="text" id="p_start" value="0"></div>' +
+        '<div class="fld"><label>持续多少秒</label><input type="text" id="p_dur" value="30"></div></div>';
+    } else if (op === 'volume') {
+      h = '<div class="fld"><label>音量倍数</label><input type="text" id="p_vol" value="1.5"></div>';
+    } else if (op === 'resize') {
+      h = '<div class="fld"><label>最长边像素</label><input type="text" id="p_side" placeholder="例如 1920"></div>';
+    } else if (op === 'watermark') {
+      h = '<div class="fld"><label>水印文字</label><input type="text" id="p_wm" value="PaperCloud"></div>';
+    } else if (op === 'frames') {
+      h = '<div class="f2">' +
+        '<div class="fld"><label>每秒抽几帧</label><input type="text" id="p_fps" value="1"></div>' +
+        '<div class="fld"><label>最多几帧</label><input type="text" id="p_max" value="20"></div></div>';
+    } else if (op === 'speed') {
+      h = '<div class="fld"><label>倍速（1 = 原速，2 = 两倍快，0.5 = 一半慢）</label>' +
+        '<select id="p_speed">' +
+        [['0.5', '0.5x 慢放'], ['0.75', '0.75x'], ['1.25', '1.25x'],
+         ['1.5', '1.5x'], ['2', '2x 快放'], ['3', '3x']].map(function (v) {
+          return '<option value="' + v[0] + '"' + (v[0] === '1.5' ? ' selected' : '') + '>' + v[1] + '</option>';
+        }).join('') + '</select></div>';
+    } else if (op === 'snapshot') {
+      h = '<div class="fld"><label>在第几秒截图</label>' +
+        '<input type="text" id="p_at" value="1" placeholder="例如 3.5"></div>';
+    } else if (op === 'rot') {
+      h = '<div class="f2">' +
+        '<div class="fld"><label>旋转角度</label><select id="p_angle">' +
+        [['90', '顺时针 90°'], ['180', '180°'], ['270', '顺时针 270°']].map(function (v) {
+          return '<option value="' + v[0] + '">' + v[1] + '</option>';
+        }).join('') + '</select></div>' +
+        '<div class="fld"><label>左右翻转</label><select id="p_flip">' +
+        '<option value="">不翻转</option><option value="1">水平镜像</option>' +
+        '</select></div></div>';
+    } else if (op === 'square') {
+      h = '<div class="fld"><label>边长（像素）</label>' +
+        '<select id="p_size">' + [['512', '512'], ['1080', '1080'], ['2048', '2048']].map(function (v) {
+          return '<option value="' + v[0] + '"' + (v[0] === '1080' ? ' selected' : '') + '>' + v[1] + ' 像素</option>';
+        }).join('') + '</select></div>';
+    } else if (op === 'longimg') {
+      h = '<div class="fld"><label>图片间隔（像素，0 = 紧贴）</label>' +
+        '<input type="text" id="p_gap" value="0"></div>';
+    } else if (op === 'pdfenc') {
+      h = '<div class="fld"><label>设置打开密码</label>' +
+        '<input type="text" id="p_pwd" value="1234" placeholder="数字或字母"></div>' +
+        '<div class="empty" style="padding:4px 0;text-align:left;font-size:12px">' +
+        '加密后打开这份 PDF 需要输密码，别忘了。</div>';
+    } else if (op === 'pdfdec') {
+      h = '<div class="fld"><label>原来设的密码（没密码留空）</label>' +
+        '<input type="text" id="p_pwd2" value="" placeholder="留空试试"></div>';
+    } else if (op === 'pdf2img') {
+      h = '<div class="fld"><label>清晰度</label><select id="p_dpi">' +
+        [['96', '普通'], ['120', '清晰'], ['200', '高清']].map(function (v) {
+          return '<option value="' + v[0] + '"' + (v[0] === '120' ? ' selected' : '') + '>' + v[1] + '</option>';
+        }).join('') + '</select></div>';
+    }
+
+    var n = usable.length;
+    var head = '<div class="batch">待处理 <b>' + n + '</b> 个文件：' +
+      usable.map(function (x) { return '<span class="pill">' + esc(x.name) + '</span>'; }).join(' ') +
+      '</div>';
+
+    $('opArea').innerHTML = head + (h || '<div class="empty" style="padding:10px 0">这个操作没有额外参数，直接开始即可。</div>');
+    var q = $('p_q');
+    if (q) q.oninput = function () { $('p_qv').textContent = this.value; };
+    $('runMsg').textContent = '';
+    $('outCard').style.display = 'none';
+  }
+
+  /* ---------------- 选文件（支持多选） ---------------- */
+  $('drop').onclick = function () { $('fileInput').click(); };
+  $('fileInput').onchange = function () {
+    var fs = [].slice.call(this.files || []);
+    if (fs.length) pick(fs);
+    this.value = '';
+  };
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    $('drop').addEventListener(ev, function (e) { e.preventDefault(); $('drop').classList.add('on'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    $('drop').addEventListener(ev, function (e) { e.preventDefault(); $('drop').classList.remove('on'); });
+  });
+  $('drop').addEventListener('drop', function (e) {
+    e.preventDefault();
+    var fs = [].slice.call(e.dataTransfer.files || []);
+    if (fs.length) pick(fs);
+  });
+
+  function pick(list) {
+    if (list.length > MAXN) {
+      msg('upMsg', '一次最多 ' + MAXN + ' 个文件，你选了 ' + list.length + ' 个', false);
+      list = list.slice(0, MAXN);
+    }
+    var ok = [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].size > 100 * 1024 * 1024) {
+        msg('upMsg', list[i].name + ' 有 ' + size(list[i].size) + '，超过 100MB，跳过', false);
+        continue;
+      }
+      ok.push(list[i]);
+    }
+    if (!ok.length) return;
+
+    // 只登记，不上传。点「开始转换」才真正传。
+    S.picked = ok.map(function (f) {
+      return { file: f, name: f.name, size: f.size, kind: kindOf(f.name) };
+    });
+    S.files = [];
+    S.code = '';
+    S.uploaded = false;
+
+    $('codeCard').style.display = 'none';
+    $('workCard').style.display = '';
+    renderFiles();
+    msg('upMsg', '已选 ' + ok.length + ' 个文件，点「开始转换」再上传', true);
+    $('workCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ---- 并发上传：最多 4 路同时传 ---- */
+  function uploadAll(cb) {
+    var total = S.picked.length;
+    if (!total) { cb(true); return; }
+    var done = 0, idx = 0, running = 0, failed = 0;
+    var LIMIT = 4;
+    msg('runMsg', '正在上传 0 / ' + total + ' …', true);
+    var up0 = $('upProg');
+    if (up0) {
+      up0.style.display = 'block';
+      var b0 = up0.querySelector('i');
+      if (b0) b0.style.width = '0%';
+      msg('upMsg', '准备上传 ' + total + ' 个文件…', true);
+    }
+
+    function next() {
+      while (running < LIMIT && idx < total) {
+        var k = idx++;
+        running++;
+        (function (k) {
+          var f = S.picked[k];
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', '/tools/upload' + (S.code ? '?code=' + encodeURIComponent(S.code) : ''));
+          xhr.setRequestHeader('X-File-Name', encodeURIComponent(f.name));
+          xhr.onload = function () {
+            var d = {};
+            try { d = JSON.parse(xhr.responseText); } catch (e) { }
+            if (d.ok) {
+              if (!S.code) S.code = d.code;
+              S.files.push({ name: d.name, size: d.size, kind: d.kind });
+            } else {
+              failed++;
+            }
+            done++; running--;
+            var pct = 100 * done / total;
+            msg('runMsg', '正在上传 ' + done + ' / ' + total + '（' + Math.round(pct) + '%）', true);
+            prog('runProg', pct * 0.6);
+            var up = $('upProg');
+            if (up) {
+              up.style.display = '';
+              up.classList.add('on');
+              var bar = up.querySelector('i');
+              if (bar) bar.style.width = pct + '%';
+              msg('upMsg', '上传中 ' + done + ' / ' + total + '　' + Math.round(pct) + '%', true);
+            }
+            if (done >= total) finish();
+            else next();
+          };
+          xhr.onerror = function () {
+            failed++; done++; running--;
+            msg('runMsg', '正在上传 ' + done + ' / ' + total + ' …（' + failed + ' 个失败）', true);
+            if (done >= total) finish(); else next();
+          };
+          xhr.send(f.file);
+        })(k);
+      }
+    }
+    function finish() {
+      S.uploaded = true;
+      var upX = $('upProg');
+      if (upX) {
+        var bx = upX.querySelector('i');
+        if (bx) bx.style.width = '100%';
+        setTimeout(function () { upX.style.display = 'none'; }, 600);
+      }
+      msg('upMsg', '上传完成，共 ' + total + ' 个', true);
+      if (failed) msg('runMsg', failed + ' 个文件上传失败', false);
+      cb(failed === 0);
+    }
+    next();
+  }
+
+  function renderFiles() {
+    var list = S.picked || [];
+    $('curFile').innerHTML = list.map(function (x, i) {
+      return '<div class="frow" style="margin-bottom:6px">' +
+        '<span class="fi">' + (KIND_ICON[x.kind] || '&#9633;') + '</span>' +
+        '<span class="fn">' + esc(x.name) + '</span>' +
+        '<span class="fs">' + size(x.size) + '</span>' +
+        '<span class="fs" style="opacity:.6">待上传</span></div>';
+    }).join('');
+    $('opArea').innerHTML = '<div class="empty" style="padding:12px 0">' +
+      '在「常用」里选一个操作 →</div>';
+    $('outCard').style.display = 'none';
+  }
+
+
+  $('btnNew').onclick = function () { openPick(); $('fileInput').click(); };
+
+  /* ---------------- 执行转换（逐个跑） ---------------- */
+  function val(id, d) { var e = $(id); return e ? e.value : (d === undefined ? '' : d); }
+
+  $('btnRun').onclick = function () {
+    if (!S.op) { msg('runMsg', '先去下面选一个操作', false); return; }
+    if (!S.picked.length && !S.files.length) {
+      msg('runMsg', '先选文件', false); return;
+    }
+    // 注意：文件还没上传时 S.files 是空的，fitFiles 一定返回空数组，
+    // 所以这里【不能】用它来拦 —— 否则永远走不到上传那一步。
+    if (S.uploaded) {
+      var u0 = fitFiles(S.op);
+      if (!u0.length) { msg('runMsg', '没有适合这个操作的文件', false); return; }
+    }
+
+    var base = { code: S.code, op: S.op, fmt: S.fmt || '' };
+    var op = S.op;
+    if (op === 'audio' || op === 'extract') base.bitrate = val('p_br', '192k');
+    if (op === 'video') { base.crf = val('p_crf', '23'); base.scale = val('p_scale', ''); }
+    if (op === 'compress') { base.crf = val('p_crf', '28'); base.quality = val('p_q', '75'); }
+    if (op === 'cut') { base.start = val('p_start', '0'); base.duration = val('p_dur', '30'); }
+    if (op === 'volume') base.volume = val('p_vol', '1.5');
+    if (op === 'resize') base.max_side = val('p_side', '');
+    if (op === 'watermark') base.watermark = val('p_wm', 'PaperCloud');
+    if (op === 'frames') { base.fps = val('p_fps', '1'); base.max_frames = val('p_max', '20'); }
+    if (op === 'pdf2img') base.dpi = val('p_dpi', '120');
+    if (op === 'speed') base.speed = val('p_speed', '1.5');
+    if (op === 'snapshot') base.at = val('p_at', '1');
+    if (op === 'rot') { base.angle = val('p_angle', '90'); base.flip = val('p_flip', ''); }
+    if (op === 'square') base.size = val('p_size', '1080');
+    if (op === 'longimg') base.gap = val('p_gap', '0');
+    if (op === 'pdfenc') base.pwd = val('p_pwd', '1234');
+    if (op === 'pdfdec') base.pwd = val('p_pwd2', '');
+
+    $('btnRun').disabled = true;
+
+    // 还没上传就先并发上传，传完再开始转换
+    if (!S.uploaded) {
+      var usable0 = fitFiles(S.op);
+      uploadAll(function (allOk) {
+        if (!S.files.length) {
+          $('btnRun').disabled = false;
+          prog('runProg', -1);
+          msg('runMsg', '一个文件都没传上去', false);
+          msg('upMsg', '上传失败：一个文件都没传上去。检查网络或看浏览器控制台', false);
+          var upF = $('upProg');
+          if (upF) upF.style.display = 'none';
+          var mask1 = $('runMask');
+          if (mask1) mask1.classList.remove('on');
+          return;
+        }
+        S.uploaded = true;
+        renderFiles();
+        startConvert();
+      });
+      return;
+    }
+
+    startConvert();
+
+    function startConvert() {
+      var usable = fitFiles(S.op);
+      if (!usable.length) {
+        $('btnRun').disabled = false;
+        prog('runProg', -1);
+        msg('runMsg', '上传的文件类型不适合这个操作', false);
+        msg('upMsg', '上传成功，但文件类型和操作对不上（' + S.op + '）', false);
+        var mask2 = $('runMask');
+        if (mask2) mask2.classList.remove('on');
+        return;
+      }
+      runLoop(usable);
+    }
+
+    function runLoop(usable) {
+    base.code = S.code;          // 上传完才有 code，这里重取一次
+    prog('runProg', 2);
+    var all = [], errs = [], k = 0, t0 = Date.now();
+    var OPNAME = opName(S.op, S.fmt);
+
+    // 弹窗：详细状态 + 条状进度条
+    rmOpen(usable.length, OPNAME + '（共 ' + usable.length + ' 个）');
+    rmList(usable.map(function (x) { return x.name; }));
+
+    window.__ktAbortRun = function () { k = usable.length + 1; };
+    function step() {
+      if (RM.cancelled) {
+        $('btnRun').disabled = false;
+        rmClose('已取消', 1);
+        msg('runMsg', '已取消，完成 ' + all.length + ' 个', false);
+        if (all.length) showOut(all);
+        return;
+      }
+      if (k >= usable.length) {
+        $('btnRun').disabled = false;
+        prog('runProg', 100);
+        var used = ((Date.now() - t0) / 1000).toFixed(1);
+        rmClose(errs.length
+          ? ('完成 ' + (usable.length - errs.length) + ' 个，失败 ' + errs.length + ' 个')
+          : ('全部完成，共 ' + usable.length + ' 个'), errs.length);
+        msg('runMsg', '完成 ' + usable.length + ' 个，用时 ' + used + ' 秒' +
+          (errs.length ? ('，失败 ' + errs.length + ' 个：' + errs.join('；')) : ''), !errs.length);
+        showOut(all);
+        return;
+      }
+      var f = usable[k];
+      var pct = 100 * k / usable.length;
+      prog('runProg', 2 + 92 * (k / usable.length));
+      rmMark(k, 'doing');
+      rmProgress(pct, (k + 1) + ' / ' + usable.length + '　' + f.name);
+      var payload = {};
+      for (var key in base) payload[key] = base[key];
+      payload.file = f.name;
+      var opt = {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      };
+      if (RM.ac) opt.signal = RM.ac.signal;
+      fetch('/tools/convert', opt).then(function (r) { return r.json(); }).then(function (d) {
+        if (d.ok) {
+          (d.outputs || []).forEach(function (o) {
+            o.from = f.name; all.push(o);
+          });
+          rmMark(k, 'ok');
+        } else {
+          errs.push(f.name + '：' + (d.message || '失败'));
+          msg('upMsg', f.name + ' 转换失败：' + (d.message || '未知原因'), false);
+          rmMark(k, 'bad', f.name + '  —— ' + (d.message || '失败'));
+        }
+        k++;
+        rmProgress(100 * k / usable.length);
+        step();
+      }).catch(function (e) {
+        if (RM.cancelled) { rmClose('已取消', 1); return; }
+        errs.push(f.name + '：' + e.message);
+        rmMark(k, 'bad', f.name + '  —— ' + e.message);
+        k++;
+        rmProgress(100 * k / usable.length);
+        step();
+      });
+    }
+    step();
+    }  // end runLoop
+  };
+
+  $('btnAgain').onclick = function () {
+    S.op = null; S.fmt = null;
+    $('opArea').innerHTML = '<div class="empty" style="padding:12px 0">' +
+      '在下面选一个操作</div>';
+    $('runMsg').textContent = '';
+    $('outCard').style.display = 'none';
+  };
+
+  function showOut(list) {
+    var box = $('outList');
+    if (!list.length) { box.innerHTML = '<div class="empty">没有产出文件</div>'; return; }
+    box.innerHTML = list.map(function (f) {
+      var u = '/tools/file?code=' + encodeURIComponent(S.code) +
+        '&name=' + encodeURIComponent(f.name);
+      return '<div class="frow">' +
+        '<span class="fi">' + (KIND_ICON[kindOf(f.name)] || '') + '</span>' +
+        '<span class="fn">' + esc(f.name) + '</span>' +
+        '<span class="fs">' + size(f.size) + '</span>' +
+        '<a class="tbtn pri" href="' + u + '" download>下载</a></div>';
+    }).join('');
+    $('outCard').style.display = '';
+  }
+
+  $('btnCopyCode').onclick = function () {
+    if (!S.code) return;
+    if (navigator.clipboard) navigator.clipboard.writeText(S.code);
+    msg('upMsg', '提取码 ' + S.code + ' 已复制', true);
+  };
+
+  $('btnMine').onclick = function () {
+    $('outCard').style.display = '';
+    $('outList').innerHTML = '<div class="empty">正在查询…</div>';
+    fetch('/tools/mine').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok || !(d.jobs || []).length) {
+        $('outList').innerHTML = '<div class="empty">这台设备 3 天内没有上传记录</div>';
+        return;
+      }
+      $('outList').innerHTML = d.jobs.map(function (j) {
+        var left = Math.max(0, Math.round((j.expire - Date.now() / 1000) / 3600));
+        var nm = (j.files && j.files[0]) ? j.files[0].name : j.code;
+        var more = (j.files && j.files.length > 1) ? (' 等 ' + j.files.length + ' 个') : '';
+        return '<div class="frow">' +
+          '<span class="fi"></span>' +
+          '<span class="fn">' + esc(nm) + more + '</span>' +
+          '<span class="fs">还有 ' + left + ' 小时</span>' +
+          '<button class="tbtn" data-open="' + esc(j.code) + '" type="button">用这个码</button></div>';
+      }).join('');
+      $('outList').querySelectorAll('[data-open]').forEach(function (b) {
+        b.onclick = function () {
+          S.code = b.getAttribute('data-open');
+          $('codeShow').textContent = S.code;
+          $('codeCard').style.display = '';
+          msg('upMsg', '已切换到提取码 ' + S.code, true);
+        };
+      });
+      $('outCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch(function () {
+      $('outList').innerHTML = '<div class="empty">查询失败</div>';
+    });
+  };
+})();
+
+  (function () {
+    var b = $('themeBtn');
+    if (!b) return;
+    var p = 'auto';
+    try { p = localStorage.getItem('kt_theme') || 'auto'; } catch (e) { }
+    b.textContent = p === 'dark' ? '\u263e' : (p === 'light' ? '\u2600' : '\u25d0');
+    b.title = { auto: '跟随系统', light: '浅色', dark: '深色' }[p] || '跟随系统';
+
+
+  })();
+</script>
+
+<!-- ================= 转换进度弹窗 ================= -->
+<div class="runmask" id="runMask" role="dialog" aria-modal="true">
+  <div class="rundlg">
+    <div class="runhead">
+      <span class="runspin" id="runSpin"></span>
+      <span class="runtitle" id="runTitle">正在转换</span>
+      <span class="runpct" id="runPct">0%</span>
+    </div>
+
+    <div class="runbar"><i id="runBar"></i></div>
+
+    <div class="runnow" id="runNow">准备中…</div>
+
+    <div class="runlog" id="runLog"></div>
+
+    <div class="runfoot">
+      <span class="runtime" id="runTime">已用 0.0 秒</span>
+      <button class="runcancel" id="runCancel" type="button">取消</button>
+      <button class="runclose" id="runClose" type="button" style="display:none">查看结果</button>
+    </div>
+  </div>
+</div>
+
+<!-- 工具箱底部：硬盘剩余量 -->
+<script>
+(function () {
+  function fmt(b) {
+    var u = [['TB',1099511627776],['GB',1073741824],['MB',1048576],['KB',1024]];
+    for (var i = 0; i < u.length; i++) {
+      if (b >= u[i][1]) return (b / u[i][1]).toFixed(b / u[i][1] >= 100 ? 0 : 1) + ' ' + u[i][0];
+    }
+    return b + ' B';
+  }
+  function go() {
+    var box = document.getElementById('diskInfo');
+    if (!box) { setTimeout(go, 300); return; }
+    function load() {
+      fetch('/tools/disk').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.ok) return;
+        var cls = d.percent >= 92 ? 'bad' : (d.percent >= 80 ? 'warn' : '');
+        box.innerHTML = '服务器磁盘　剩余 <b>' + fmt(d.free) + '</b> / ' + fmt(d.total) +
+          '<span class="bar ' + cls + '"><i style="width:' + Math.min(100, d.percent) + '%"></i></span>' +
+          '已用 ' + d.percent + '%';
+      }).catch(function () { });
+    }
+    load();
+    setInterval(load, 60000);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
+</script>
+
+<!-- 取件码取回 -->
+<script>
+(function () {
+  function fmt(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function icon(n) {
+    var e = (n.split('.').pop() || '').toLowerCase();
+    if ('mp3 wav flac aac m4a ogg wma opus'.split(' ').indexOf(e) >= 0) return '\u266b';
+    if ('mp4 mkv avi mov webm'.split(' ').indexOf(e) >= 0) return '\u25b6';
+    if ('jpg jpeg png webp bmp gif tiff'.split(' ').indexOf(e) >= 0) return '\u25a3';
+    if (e === 'pdf') return 'PDF';
+    return '\u25a1';
+  }
+  function go() {
+    var inp = document.getElementById('pkCode');
+    var btn = document.getElementById('pkGo');
+    var msg = document.getElementById('pkMsg');
+    var list = document.getElementById('pkList');
+    if (!inp || !btn) { setTimeout(go, 300); return; }
+
+    function say(t, ok) { msg.className = 'msg ' + (ok ? 'ok' : 'err'); msg.textContent = t || ''; }
+
+    function run() {
+      var code = (inp.value || '').trim().toUpperCase();
+      if (!code) { say('请输入取件码', false); return; }
+      btn.disabled = true;
+      say('正在查找…', true);
+      list.innerHTML = '';
+      fetch('/tools/lookup?code=' + encodeURIComponent(code))
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          btn.disabled = false;
+          if (!d.ok) { say(d.message || '没找到', false); return; }
+          if (!d.files || !d.files.length) { say('这个取件码下没有可下载的文件', false); return; }
+          var left = d.expire ? Math.max(0, Math.round((d.expire - Date.now() / 1000) / 3600)) : 0;
+          say('找到 ' + d.files.length + ' 个文件' + (left ? '，还有 ' + left + ' 小时过期' : ''), true);
+          list.innerHTML = d.files.map(function (f) {
+            var u = '/tools/file?code=' + encodeURIComponent(code) +
+              '&name=' + encodeURIComponent(f.name);
+            return '<div class="frow">' +
+              '<span class="fi">' + icon(f.name) + '</span>' +
+              '<span class="fn">' + esc(f.name) + '</span>' +
+              '<span class="fs">' + fmt(f.size) + '</span>' +
+              '<a class="tbtn pri" href="' + u + '" download>下载</a></div>';
+          }).join('');
+        })
+        .catch(function () { btn.disabled = false; say('网络错误，请重试', false); });
+    }
+    btn.onclick = run;
+    inp.onkeydown = function (e) { if (e.key === 'Enter') run(); };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
+</script>
+
+<div class="intromask" id="introMask">
+  <div class="introbox">
+    <div class="introhead" id="introTitle">分类介绍</div>
+    <div class="introbody" id="introBody"></div>
+    <button class="introok" id="introOk" type="button">知道了</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var TEXT = {};
+  document.querySelectorAll('.cpill.intro').forEach(function (el) {
+    var k = el.getAttribute('data-intro');
+    var box = el.closest('.cat');
+    var name = box ? box.querySelector('.cnbox b').textContent : '';
+    var desc = box ? box.querySelector('.cnbox em').textContent : '';
+    TEXT[k] = { name: name, desc: desc };
+  });
+  var LONG = {"ai":"把作文拍成照片传上来，先在本机识别成文字（图片不会上传到任何 AI 服务），再交给 DeepSeek 批改。会给出整体评价、具体到句子的修改建议，以及一句能抄在作文本上的评语。年级选得越准，批改越贴合。","audio": "把音频换成别的格式、切出一段、放大或压低声音，也能从视频里把声音抽出来。常用的是 MP3（哪都能放）和 FLAC（无损）。所有处理都在服务器上跑，处理完就能直接下载。", "video": "视频换格式、压体积、截一段、抽一帧截图。压缩是最常用的 —— 原来几百兆的视频压到几十兆，画质还能看，发微信、传群里都方便。", "image": "图片换格式、压体积、改尺寸、加水印，还有旋转、转黑白、裁成方图、多张拼长图。做班服设计图、把作业照片压小一点再发，都挺好用。", "doc": "Word / Excel / PPT 转 PDF，图片转 PDF，还有 PDF 之间的一系列操作：提取文字、加密码、去密码、拆页、合并、转图片。注意 Office 转 PDF 会把文字和表格提出来重排，排版和原文件不一样。"};
+  function go() {
+    var mask = document.getElementById('introMask');
+    var tt = document.getElementById('introTitle');
+    var tb = document.getElementById('introBody');
+    if (!mask) { setTimeout(go, 300); return; }
+    document.querySelectorAll('.cpill.intro').forEach(function (el) {
+      el.onclick = function (e) {
+        e.stopPropagation();
+        var k = el.getAttribute('data-intro');
+        var d = TEXT[k] || {};
+        tt.textContent = d.name || '分类介绍';
+        tb.textContent = LONG[k] || d.desc || '';
+        mask.classList.add('on');
+      };
+    });
+    document.getElementById('introOk').onclick = function () { mask.classList.remove('on'); };
+    mask.onclick = function (e) { if (e.target === mask) mask.classList.remove('on'); };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
+</script>
+
+<!-- AI 批改 -->
+<script>
+(function () {
+  var MAX = 10;
+  var S = { files: [], code: '', busy: false, ready: false };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function md(txt) {
+    var out = [], inList = false;
+    var lines = String(txt || '').split('\n');
+    function close() { if (inList) { out.push('</ul>'); inList = false; } }
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i].replace(/\s+$/, '');
+      if (!ln.trim()) { close(); continue; }
+      if (/^#{1,3}\s+/.test(ln)) { close(); out.push('<h3>' + esc(ln.replace(/^#{1,3}\s+/, '')) + '</h3>'); continue; }
+      if (/^[-*+]\s+/.test(ln)) { if (!inList) { out.push('<ul>'); inList = true; } out.push('<li>' + inl(ln.replace(/^[-*+]\s+/, '')) + '</li>'); continue; }
+      if (/^\d+[.、)]\s+/.test(ln)) { if (!inList) { out.push('<ul>'); inList = true; } out.push('<li>' + inl(ln.replace(/^\d+[.、)]\s+/, '')) + '</li>'); continue; }
+      close(); out.push('<p>' + inl(ln) + '</p>');
+    }
+    close(); return out.join('');
+  }
+  function inl(s) {
+    s = esc(s);
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+    return s;
+  }
+
+  /* ---- 状态行 ---- */
+  function stat(kind, text) {
+    var e = $('aiStat');
+    if (!e) return;
+    e.className = 'aistat ' + (kind || 'wait');
+    e.innerHTML = '<span class="dot"></span>' + esc(text);
+  }
+
+  /* ---- 思考面板：一条一条往下长 ---- */
+  function logReset() {
+    var e = $('aiLog');
+    if (!e) return;
+    e.innerHTML = '';
+    e.classList.add('on');
+  }
+  function logAdd(text, state) {
+    var e = $('aiLog');
+    if (!e) return null;
+    var d = document.createElement('div');
+    d.className = 's ' + (state || 'wait');
+    var ic = { wait: '·', run: '', done: '✓', bad: '✕' }[state || 'wait'];
+    if (state === 'run') ic = '<span class="spin"></span>';
+    d.innerHTML = '<span class="ic">' + ic + '</span><span class="tx">' + esc(text) + '</span>';
+    e.appendChild(d);
+    var wrap = e.parentNode;
+    if (wrap && wrap.scrollHeight > wrap.clientHeight + 40) {
+      d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    return d;
+  }
+  function logSet(d, text, state) {
+    if (!d) return;
+    d.className = 's ' + state;
+    var ic = { wait: '·', run: '<span class="spin"></span>', done: '✓', bad: '✕' }[state] || '·';
+    d.querySelector('.ic').innerHTML = ic;
+    d.querySelector('.tx').textContent = text;
+  }
+
+  function thumbs() {
+    var box = $('aiThumbs');
+    if (!box) return;
+    box.innerHTML = S.files.map(function (f, i) {
+      return '<div class="th"><img src="' + f.url + '" alt="">' +
+        '<span class="n">' + (i + 1) + '</span>' +
+        '<button class="x" data-i="' + i + '" type="button">✕</button></div>';
+    }).join('');
+    box.querySelectorAll('.x').forEach(function (b) {
+      b.onclick = function () {
+        var i = +b.getAttribute('data-i');
+        try { URL.revokeObjectURL(S.files[i].url); } catch (e) { }
+        S.files.splice(i, 1); thumbs();
+      };
+    });
+  }
+
+  function addFiles(list) {
+    var arr = [].slice.call(list || []);
+    for (var i = 0; i < arr.length; i++) {
+      if (S.files.length >= MAX) { break; }
+      var f = arr[i];
+      if (!/^image\//.test(f.type)) continue;
+      if (f.size > 20 * 1024 * 1024) continue;
+      S.files.push({ file: f, url: URL.createObjectURL(f) });
+    }
+    thumbs();
+    $('aiOut').classList.remove('on');
+    $('aiLog').classList.remove('on');
+  }
+
+  function uploadOne(idx, onPct) {
+    return new Promise(function (res, rej) {
+      var f = S.files[idx].file;
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/tools/upload' + (S.code ? '?code=' + encodeURIComponent(S.code) : ''));
+      var nm = '作文_' + (idx + 1) + '.jpg';
+      xhr.setRequestHeader('X-File-Name', encodeURIComponent(nm));
+      xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable) onPct(e.loaded / e.total);
+      };
+      xhr.onload = function () {
+        var d = {};
+        try { d = JSON.parse(xhr.responseText); } catch (e) { }
+        if (d.ok) { if (!S.code) S.code = d.code; res(nm); }
+        else rej(new Error(d.message || ('上传失败 ' + xhr.status)));
+      };
+      xhr.onerror = function () { rej(new Error('上传出错')); };
+      xhr.send(f);
+    });
+  }
+  var G = '';    // 当前选的年级
+  var WHOLE = null;   // 旧版服务器一次性返回批改结果时存在这里，识别请求也要带上（兼容旧版服务器）
+  function ocrOne(name) {
+    return fetch('/tools/essay', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage: 'ocr', code: S.code, files: [name], grade: G })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok) throw new Error(d.message || '识别失败');
+      // 新版服务器返回 items（逐张）；旧版会一口气做完，直接给 result
+      if (d.result) return { text: d.result, chars: 0, whole: true };
+      return (d.items && d.items[0]) || { text: '', chars: 0 };
+    });
+  }
+  function gradeAll(text, grade) {
+    return fetch('/tools/essay', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage: 'grade', grade: grade, text: text })
+    }).then(function (r) { return r.json(); });
+  }
+
+  function go() {
+    var grade = $('aiGrade'), gob = $('aiGo');
+    if (!grade || !gob) { setTimeout(go, 300); return; }
+
+    var GRADES = ['小学1年级', '小学2年级', '小学3年级', '小学4年级', '小学5年级', '小学6年级',
+                  '初一', '初二', '初三', '高一', '高二', '高三'];
+    function fillGrades(list) {
+      if (!list || !list.length) list = GRADES;
+      var h = '<option value="" selected>请选择年级</option>';
+      h += list.map(function (g) { return '<option value="' + g + '">' + g + '</option>'; }).join('');
+      grade.innerHTML = h; grade.selectedIndex = 0;
+    }
+    fillGrades(GRADES);
+
+    // 检查 DeepSeek API。
+    // 注意：这里【绝对不能】再调一次 fillGrades —— 它会把下拉重置回「请选择」，
+    // 用户选好的年级就被无声清掉了，然后校验又报「请先选年级」。
+    fetch('/tools/grades').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ready) {
+        S.ready = true;
+        stat('ok', 'DeepSeek API 正常，可以开始批改');
+      } else {
+        S.ready = false;
+        stat('bad', '还没配置 DeepSeek API Key（改完 secrets.json 要重启服务才生效）');
+      }
+    }).catch(function () {
+      S.ready = false;
+      stat('bad', '连不上服务器，检查网络');
+    });
+
+    // ① 先看 HTML 里带的构建标记 —— 这是最可靠的：页面就是服务器吐出来的
+    var BUILD = window.__KT_BUILD || '';
+    if (!BUILD) {
+      stat('bad', '服务器是旧版本（HTML 里没有构建标记）—— app\\server.py 没生效，检查是否拷对目录并重启');
+    } else {
+      stat('wait', '服务器版本 ' + BUILD + '，正在检查 DeepSeek…');
+    }
+
+    // ② 再拉自检
+    fetch('/tools/diag').then(function (r) { return r.json(); }).then(function (z) {
+      if (!z || !z.ok) return;
+      S.ready = !!z.deepseek_key_set;
+      if (z.deepseek_key_set) {
+        stat('ok', 'DeepSeek API 正常（Key …' + (z.deepseek_key_tail || '') + '，' + z.grades_count + ' 个年级，版本 ' + (z.server_py || BUILD) + '）');
+      } else {
+        stat('bad', '没读到 deepseek_key（版本 ' + (z.server_py || '?') +
+                    '，OCR ' + (z.ocr_ps1 ? '正常' : '缺失') + '）— 检查 config\\secrets.json');
+      }
+    }).catch(function () {
+      stat('bad', '服务器没有 /tools/diag 接口 —— app\\server.py 还是旧版本');
+    });
+
+    grade.onchange = function () { };
+
+    $('aiCam').onclick = function () { $('aiCamInput').click(); };
+    $('aiPic').onclick = function () { $('aiPicInput').click(); };
+    $('aiCamInput').onchange = function () { addFiles(this.files); this.value = ''; };
+    $('aiPicInput').onchange = function () { addFiles(this.files); this.value = ''; };
+    $('aiClear').onclick = function () {
+      S.files.forEach(function (f) { try { URL.revokeObjectURL(f.url); } catch (e) { } });
+      S.files = []; S.code = ''; thumbs();
+      $('aiOut').classList.remove('on');
+      $('aiLog').classList.remove('on');
+    };
+
+    var drop = $('aiDrop');
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('on'); });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('on'); });
+    });
+    drop.addEventListener('drop', function (e) { addFiles(e.dataTransfer.files); });
+
+    gob.onclick = function () {
+      if (S.busy) return;
+      if (!grade.value) { stat('bad', '请先选年级（当前值：' + (grade.value || '空') + '，共 ' + grade.options.length + ' 项）'); grade.focus(); return; }
+      if (!S.files.length) { stat('bad', '先拍照片或选图片'); return; }
+
+      S.busy = true; gob.disabled = true;
+      G = grade.value;                  // 识别请求也要带上，兼容旧版服务器
+      $('aiOut').classList.remove('on');
+      logReset();
+      stat('wait', '正在处理…');
+
+      var names = [];
+      var stepUp = logAdd('上传 ' + S.files.length + ' 张图片', 'run');
+      var chain = Promise.resolve();
+
+      S.files.forEach(function (f, i) {
+        chain = chain.then(function () {
+          return uploadOne(i, function (p) {
+            logSet(stepUp, '上传 第 ' + (i + 1) + ' / ' + S.files.length + ' 张（' +
+              Math.round(p * 100) + '%）', 'run');
+          }).then(function (nm) { names.push(nm); });
+        });
+      });
+
+      chain.then(function () {
+        logSet(stepUp, '上传完成，共 ' + names.length + ' 张', 'done');
+        var allText = [];
+        var c2 = Promise.resolve();
+        names.forEach(function (nm, i) {
+          var row = logAdd('识别第 ' + (i + 1) + ' 张', 'wait');
+          c2 = c2.then(function () {
+            logSet(row, '识别第 ' + (i + 1) + ' 张…', 'run');
+                  return ocrOne(nm).then(function (it) {
+              if (it.whole) {
+                WHOLE = it.text;
+                logSet(row, '服务器旧版：已一次性完成识别 + 批改', 'done');
+                return;
+              }
+              allText.push(it.text || '');
+              if (it.chars > 0) logSet(row, '第 ' + (i + 1) + ' 张识别完成，' + it.chars + ' 字', 'done');
+              else logSet(row, '第 ' + (i + 1) + ' 张没识别出文字', 'bad');
+            });
+          });
+        });
+        return c2.then(function () { return allText; });
+      }).then(function (allText) {
+        if (WHOLE) {
+          logAdd('批改完成', 'done');
+          return { ok: true, result: WHOLE, grade: G, info: '（服务器旧版，一次性完成）' };
+        }
+        var joined = allText.filter(Boolean).join('\n\n');
+        if (!joined.trim()) throw new Error('所有图片都没识别出文字');
+        var total = joined.replace(/\s/g, '').length;
+        logAdd('共识别 ' + total + ' 字，提交给 DeepSeek', 'done');
+        var row = logAdd('AI 正在批改（' + grade.value + '）…', 'run');
+        stat('wait', 'AI 批改中，通常 5-15 秒…');
+        return gradeAll(joined, grade.value).then(function (d) {
+          if (!d.ok) { logSet(row, d.message || '批改失败', 'bad'); throw new Error(d.message || '批改失败'); }
+          logSet(row, '批改完成', 'done');
+          return d;
+        });
+      }).then(function (d) {
+        stat('ok', '批改完成');
+        var out = $('aiOut');
+        out.innerHTML = md(d.result) + '<div class="aifoot">' + esc(d.grade || '') +
+          '　·　' + esc(d.info || '') + '</div>';
+        out.classList.add('on');
+        out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        S.busy = false; gob.disabled = false;
+      }).catch(function (e) {
+        stat('bad', e.message || '出错了');
+        S.busy = false; gob.disabled = false;
+      });
+    };
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
+</script>
+
+<!-- 依赖缺失标记 -->
+<script>
+(function(){
+  function go(){
+    fetch('/tools/grades').then(function(r){return r.json();}).then(function(d){
+      var m = (d && d.caps) || {};
+      var missing = {};
+      Object.keys(m).forEach(function(k){ if (m[k] && m[k].length) missing[k] = m[k]; });
+      if (!Object.keys(missing).length) return;
+      document.querySelectorAll('.tcard[data-needs]').forEach(function(el){
+        var need = el.getAttribute('data-needs');
+        if (!missing[need]) return;
+        el.classList.add('noavail');
+        el.onclick = function(e){
+          e.preventDefault(); e.stopPropagation();
+          var em = el.querySelector('.tt em');
+          if (em) em.textContent = '缺 ' + missing[need].join('、') + ' —— 跑一次 deploy.bat 会自动装';
+          return false;
+        };
+      });
+    }).catch(function(){});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
+</script>
+</body>
+</html>
+

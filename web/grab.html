@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080c12">
+<title>一键同步 · 在线课表-By Paperpiece</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/style.css?v=20261016a">
+<style>
+  .steps { counter-reset: s; margin: 0; padding: 0; list-style: none; }
+  .steps li {
+    counter-increment: s;
+    position: relative;
+    padding: 0 0 20px 44px;
+    border-left: 2px solid var(--line);
+    margin-left: 15px;
+  }
+  .steps li:last-child { border-left-color: transparent; padding-bottom: 4px; }
+  .steps li::before {
+    content: counter(s);
+    position: absolute; left: -15px; top: -3px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-weight: 800; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 4px var(--bg);
+  }
+  .steps b { display: block; font-size: 15px; margin-bottom: 3px; }
+  .steps p { margin: 0; color: var(--text-dim); font-size: 13.5px; }
+
+  .bookmarklet {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 26px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--ok)));
+    color: #fff; font-size: 16px; font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 12px 34px -10px color-mix(in srgb, var(--accent) 85%, transparent);
+    cursor: grab;
+    transition: transform .2s var(--ease), box-shadow .25s var(--ease);
+    user-select: none;
+  }
+  .bookmarklet:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 18px 44px -12px color-mix(in srgb, var(--accent) 90%, transparent); }
+  .bookmarklet:active { cursor: grabbing; transform: scale(.98); }
+
+  .codebox {
+    width: 100%; box-sizing: border-box; min-height: 92px;
+    background: var(--surface-3); color: var(--text-dim);
+    border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: 10px 12px; font: 11px/1.5 var(--font-num);
+    resize: vertical; word-break: break-all; outline: none;
+  }
+  .codebox:focus { border-color: var(--accent); }
+
+  .st { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .st .led { width: 9px; height: 9px; border-radius: 50%; background: var(--text-faint); flex: none; }
+  .st.ok .led { background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); animation: pulse 2s infinite; }
+  .st.bad .led { background: var(--danger); }
+
+  .kv { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 13.5px; }
+  .kv:last-child { border-bottom: 0; }
+  .kv span:first-child { color: var(--text-dim); width: 96px; flex: none; }
+  .kv span:last-child { word-break: break-all; }
+</style>
+<style id="ktGlass">
+/* =====================================================================
+   PaperCloud · 液态玻璃 + 全站渐变
+   只作用在「本身就是卡片」的元素和交互控件上，
+   不碰 .toolbar / .minis / .chain 这类纯布局容器。
+   ===================================================================== */
+
+@keyframes ktDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- 2. 按钮：液态玻璃 ---------- */
+.btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  position: relative !important;
+  /* 不用 backdrop-filter —— Safari 上会让按钮里的文字变淡。
+     改用两层不透明渐变模拟玻璃：斜向反光条 + 纵向厚度 */
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.98) 0%,
+      rgba(255,255,255,.42) 26%,
+      rgba(255,255,255,.06) 47%,
+      rgba(255,255,255,.06) 58%,
+      rgba(255,255,255,.58) 83%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #ffffff 0%, #f2f7fd 46%, #e3ecf7 100%) !important;
+  color: #101c28 !important;
+  -webkit-text-fill-color: #101c28 !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,.5),
+    0 1px 1.5px rgba(20,50,90,.08),
+    0 7px 20px rgba(20,50,90,.12) !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s !important;
+}
+.btn:hover, .btn-ghost:hover, .callbtn:hover, .ico:hover, .st:hover, .chip:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.70) 48%,
+      rgba(255,255,255,.58) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 2px 3px rgba(20,50,90,.09),
+    0 12px 30px rgba(20,50,90,.16) !important;
+  transform: translateY(-1px);
+}
+.btn:active, .btn-ghost:active, .callbtn:active, .ico:active, .st:active {
+  transform: scale(.965);
+  box-shadow: inset 0 1px 2px rgba(20,50,90,.14),
+              0 3px 10px rgba(20,50,90,.10) !important;
+}
+
+/* 主按钮：蓝玻璃（不透明，避免 Safari 冲淡文字） */
+.btn.pri, .btn-ghost.primary, .btn.primary {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.55) 0%,
+      rgba(255,255,255,.12) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #6cb8ff 0%, #3d8ff2 50%, #2a72dc 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 2px 3px rgba(20,70,140,.20),
+    0 10px 26px rgba(40,120,220,.34) !important;
+}
+.btn.dg { color: #e8454b !important; }
+
+.tab.on {
+  background: linear-gradient(180deg,
+      rgba(96,180,255,.95) 0%,
+      rgba(50,132,244,.93) 100%) !important;
+  color: #fff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6),
+              0 6px 18px rgba(40,120,220,.32) !important;
+}
+.st[data-on="1"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55),
+              0 6px 16px rgba(20,50,90,.22) !important;
+}
+
+/* ---------- 3. 卡片：磨砂玻璃（不动圆角） ---------- */
+.card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  -webkit-backdrop-filter: blur(26px) saturate(185%) !important;
+  backdrop-filter: blur(26px) saturate(185%) !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.76) 0%,
+      rgba(255,255,255,.62) 100%) !important;
+  border-color: rgba(255,255,255,.7) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 1px 2px rgba(20,50,90,.05),
+    0 14px 38px rgba(20,50,90,.10) !important;
+}
+
+/* ---------- 4. 输入框 ---------- */
+input[type=text], input[type=date], input[type=tel],
+input[type=datetime-local], select, textarea {
+  -webkit-backdrop-filter: blur(14px) saturate(170%) !important;
+  backdrop-filter: blur(14px) saturate(170%) !important;
+  background: rgba(255,255,255,.62) !important;
+  border: 1px solid rgba(255,255,255,.8) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              inset 0 2px 6px rgba(20,50,90,.05) !important;
+}
+input:focus, select:focus, textarea:focus {
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(96,180,255,.9) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 0 0 3px rgba(96,180,255,.22) !important;
+}
+
+/* =====================================================================
+   5. 深色主题 —— 用和上面完全一样的选择器清单，避免漏网
+   ===================================================================== */
+html[data-theme="dark"], html[data-theme="dark"] body {
+  background: linear-gradient(125deg,
+      #16283d 0%, #24203c 26%, #10312a 52%, #3a2c14 76%, #16283d 100%) !important;
+  background-size: 400% 400% !important;
+  background-attachment: fixed !important;
+  animation: ktDrift 22s ease-in-out infinite !important;
+}
+
+html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.22) 0%,
+      rgba(255,255,255,.06) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.12) 100%),
+    linear-gradient(180deg, #33404f 0%, #28323f 50%, #1f2833 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 8px 22px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] .btn:hover,
+html[data-theme="dark"] .btn-ghost:hover,
+html[data-theme="dark"] .ico:hover,
+html[data-theme="dark"] .callbtn:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.26) 0%,
+      rgba(255,255,255,.16) 100%) !important;
+}
+html[data-theme="dark"] .btn.pri,
+html[data-theme="dark"] .btn-ghost.primary,
+html[data-theme="dark"] .btn.primary {
+  background: linear-gradient(180deg,
+      #5aabff 0%, #2270e2 100%) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+}
+html[data-theme="dark"] .btn.dg { color: #ff8b8f !important; }
+
+html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.085) 0%,
+      rgba(255,255,255,.04) 100%) !important;
+  border-color: rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 14px 38px rgba(0,0,0,.44) !important;
+}
+
+html[data-theme="dark"] input, html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  color: #e9f1fa !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #7d8fa3 !important; }
+html[data-theme="dark"] .tab.on {
+  background: linear-gradient(180deg,
+      rgba(86,168,255,.95) 0%,
+      rgba(34,112,226,.95) 100%) !important;
+}
+
+/* Safari / 老浏览器不支持 backdrop-filter 时退化成接近不透明 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(255,255,255,.94) !important; }
+  .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(255,255,255,.96) !important; }
+  html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(40,54,70,.94) !important; }
+  html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(30,42,56,.95) !important; }
+}
+</style>
+<style id="ktGlassExtra">
+/* ---------- 6. 右上角图标按钮：浅色模式下用深色，别和浅背景糊一起 ---------- */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #3b4552 0%, #262e39 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    0 6px 16px rgba(18,28,45,.30) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5563 0%, #303945 100%) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式下保持玻璃，但给个亮一点的边 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  color: #eaf2fb !important;
+  border-color: rgba(255,255,255,.22) !important;
+}
+
+/* ---------- 7. 政治面貌等小标签：跟着背景走，不再用固定色 ---------- */
+.pill, .tag {
+  background: rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+  backdrop-filter: blur(10px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  color: #4a6076 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 1px 3px rgba(20,50,90,.07) !important;
+}
+html[data-theme="dark"] .pill, html[data-theme="dark"] .tag {
+  background: rgba(255,255,255,.11) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #b3c6d8 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+/* 性别 / 状态那几种彩色小标签也适配 */
+html[data-theme="dark"] .pill.m { background: rgba(80,160,255,.22) !important; color: #8ec8ff !important; border-color: rgba(120,190,255,.28) !important; }
+html[data-theme="dark"] .pill.f { background: rgba(255,120,190,.20) !important; color: #f0a5cd !important; border-color: rgba(255,150,205,.26) !important; }
+html[data-theme="dark"] .pill.off { background: rgba(255,255,255,.08) !important; color: #8b9aab !important; }
+/* 头衔：金标签，深色下换成低饱和暖金 */
+html[data-theme="dark"] .ttl {
+  background: linear-gradient(135deg, rgba(255,215,120,.18), rgba(255,190,60,.12)) !important;
+  color: #f0c75e !important;
+  border: 1px solid rgba(240,199,94,.30) !important;
+}
+
+/* 右上角深色按钮同样不用 backdrop-filter，避免文字被冲淡 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+</style>
+<style id="ktTopBtn">
+/* ===== 右上角按钮：随深浅模式变色 + 缩小 ===== */
+#themeBtn, .head-right .icon-btn, .head-right .ibtn,
+.topin .ico, .topbar .ico {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 9px !important;
+  font-size: 13.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s, background .2s !important;
+}
+/* 浅色模式：白玻璃 + 深字 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .head-right .ibtn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f6fc 55%, #e6eef8 100%) !important;
+  color: #2b3947 !important;
+  -webkit-text-fill-color: #2b3947 !important;
+  border: 1px solid rgba(255,255,255,.95) !important;
+  box-shadow: inset 0 1px 0 #fff,
+              0 1px 2px rgba(20,50,90,.08),
+              0 4px 12px rgba(20,50,90,.12) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .head-right .ibtn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #eaf2fb 100%) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(20,50,90,.18) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式：深玻璃 + 浅字 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .head-right .ibtn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  background: linear-gradient(180deg, #3b4756 0%, #2a3441 55%, #222b36 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22),
+              0 6px 16px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] #themeBtn:hover,
+html[data-theme="dark"] .head-right .icon-btn:hover,
+html[data-theme="dark"] .head-right .ibtn:hover,
+html[data-theme="dark"] .topin .ico:hover,
+html[data-theme="dark"] .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5766 0%, #333e4c 100%) !important;
+  transform: translateY(-1px);
+}
+:active#themeBtn, .head-right .icon-btn:active, .topin .ico:active {
+  transform: scale(.93) !important;
+}
+/* edit.html 那个带文字的「返回课表」按钮保持原样，只把它挪到右边 */
+.head-right #backLink { margin-left: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div class="brand">
+      <i class="mark"></i>
+      <span class="bname">在线课表</span>
+      <span class="byline">By Paperpiece</span>
+    </div>
+    <div class="head-right">
+      <a class="btn-ghost" id="backLink" href="/timetable">← 回到课表</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:22px;padding-bottom:40px">
+
+  <div class="panel" style="margin-top:0">
+    <h2>为什么要这一步</h2>
+    <p style="margin:0;color:var(--text-dim);font-size:13.5px;line-height:1.75">
+      教务系统把登录凭证放在浏览器专属的地方，<b style="color:var(--text)">外部程序拿不到</b>，
+      所以课表服务没法自己登录去抓。<br>
+      但你的浏览器是登录成功的 —— 所以让浏览器代劳：
+      在教务系统页面里执行这段脚本，它把课表抓出来回传给本地服务。<br>
+      <b style="color:var(--ok)">抓一次之后，同学那边就能看到真实课表了。</b>
+    </p>
+  </div>
+
+  <div class="panel" style="border-color:color-mix(in srgb, var(--warn) 45%, var(--line))">
+    <h2>🔁 学校调课了怎么办？（手动重新抓取）</h2>
+    <p style="margin:0 0 12px;color:var(--text-dim);font-size:13.5px;line-height:1.8">
+      调课之后课表<b style="color:var(--text)">不会自己变</b>，需要你手动触发一次。
+      三种方式，随你方便：
+    </p>
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+      <tr>
+        <td style="padding:8px 10px 8px 0;white-space:nowrap;vertical-align:top">
+          <b style="color:var(--ok)">① 最省事</b></td>
+        <td style="padding:8px 0;color:var(--text-dim);line-height:1.7">
+          <b style="color:var(--text)">装了油猴脚本的话</b>：打开教务系统课表页面，
+          点右下角那颗 <b style="color:var(--text)">「🔄 同步课表」</b> 按钮，3 秒完成。<br>
+          <span style="font-size:12.5px">也可以在控制台敲 <code>kbSyncNow()</code>，
+          或点 Tampermonkey 图标选「🔄 立即同步课表」。</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px 8px 0;white-space:nowrap;vertical-align:top">
+          <b>② 没装脚本</b></td>
+        <td style="padding:8px 0;color:var(--text-dim);line-height:1.7">
+          用下面的<b style="color:var(--text)">控制台粘贴</b>方式，重新跑一次就行。
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px 8px 0;white-space:nowrap;vertical-align:top">
+          <b>③ 应急</b></td>
+        <td style="padding:8px 0;color:var(--text-dim);line-height:1.7">
+          来不及抓的话，去 <a href="/edit" id="editLink2" style="color:var(--accent)">手动录入</a>
+          页面直接改那几门课，全班也能立刻看到。
+        </td>
+      </tr>
+    </table>
+    <p style="margin:12px 0 0;color:var(--text-faint);font-size:12px;line-height:1.7">
+      💡 课表服务会记录每次变更，同学端的页面会<b>自动刷新并高亮改动的课</b>，
+      不用你去群里通知。
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>操作步骤</h2>
+    <ol class="steps">
+      <li>
+        <b>复制下面这段代码</b>
+        <p>点一下按钮，整段代码就进剪贴板了。</p>
+        <div style="margin-top:12px">
+          <button class="bookmarklet" id="btnCopyCode" style="border:0">📋 复制完整代码</button>
+        </div>
+      </li>
+      <li>
+        <b>打开教务系统的课表页面，按 F12，切到 Console（控制台）</b>
+        <p>就是你平时看课表的那个页面。<br>
+           第一次粘贴 Chrome 会拦你，先在控制台手动输入 <b>allow pasting</b> 回车。</p>
+      </li>
+      <li>
+        <b>把代码粘贴进去，按回车</b>
+        <p>左下角会出现一个蓝色小面板，写着「同步监听中」。</p>
+      </li>
+      <li>
+        <b>👉 在这个页面里点一下左侧的「课表」菜单，或者切换一下周次</b>
+        <p>这一步<b>必须做</b>：脚本要靠系统自己发出的那次请求来拿到课表数据。
+           点完之后，小面板会变成「✅ 已截获课表数据」并自动上传。</p>
+      </li>
+      <li>
+        <b>回来看下面那个状态灯变绿</b>
+        <p>变绿就成功了，可以关掉教务系统页面。</p>
+      </li>
+    </ol>
+    <p style="margin:14px 0 8px;color:var(--text-dim);font-size:13px">
+      待复制的代码（如果按钮复制失败，手动全选这里复制）：
+    </p>
+    <textarea class="codebox" id="pasteCode" readonly style="min-height:150px"></textarea>
+  </div>
+
+  <div class="panel" style="border-color:color-mix(in srgb, var(--ok) 45%, var(--line))">
+    <h2>💡 嫌每次粘贴麻烦？用「代码片段」存起来</h2>
+    <p style="margin:0 0 12px;color:var(--text-dim);font-size:13.5px;line-height:1.75">
+      Chrome 开发者工具有个 <b style="color:var(--text)">Snippets（代码片段）</b> 功能。
+      把代码存进去一次，以后调课时只要
+      <b style="color:var(--text)">点两下</b> 就能重跑，不用再复制粘贴。
+    </p>
+    <ol style="margin:0 0 14px;padding-left:20px;color:var(--text-dim);font-size:13.5px;line-height:1.95">
+      <li>打开教务系统课表页 → <b>F12</b></li>
+      <li>切到 <b>Sources（源代码）</b> 面板 → 左侧找 <b>Snippets（代码片段）</b> 标签</li>
+      <li>点 <b>+ New snippet</b>，名字改成 <code>同步课表</code></li>
+      <li>把上面复制的代码粘到右边 → 按 <b>Ctrl+S</b> 保存</li>
+      <li>以后要同步：<b>点一下这个片段 → 按 Ctrl+Enter</b>，完事</li>
+    </ol>
+    <p style="margin:0;color:var(--text-faint);font-size:12px;line-height:1.7">
+      ⚠️ 注意：这样做的前提是<b>那个课表页面一直开着</b>（刷新后片段还在，不用重新粘）。<br>
+      💡 如果你愿意装个浏览器扩展，用上面的「油猴脚本」更省事 —— 页面右下角常驻一个按钮，点一下就行。
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>同步状态</h2>
+    <div class="st" id="st"><i class="led"></i><span id="stText">正在准备…</span></div>
+    <div style="margin-top:14px">
+      <div class="kv"><span>上传地址</span><span id="upUrl" style="font-family:var(--font-num);font-size:12px"></span></div>
+      <div class="kv"><span>当前课表</span><span id="curCourse">—</span></div>
+      <div class="kv"><span>会话状态</span><span id="curSess">—</span></div>
+      <div class="kv"><span>最近更新</span><span id="curTime">—</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="border-color:color-mix(in srgb, var(--ok) 40%, var(--line))">
+    <h2>⭐ 一劳永逸：装个油猴脚本（强烈推荐）</h2>
+    <p style="margin:0 0 12px;color:var(--text-dim);font-size:13.5px;line-height:1.75">
+      上面那种「每次开控制台粘贴」只能同步一次。
+      <b style="color:var(--text)">想让它以后一直自动同步，装这个脚本</b>：<br>
+      装上以后，你只要让教务系统的页面在浏览器里开着（可以最小化、可以切到别的标签），
+      它就会每隔 <b id="pollMin">10</b> 分钟自己抓一次课表并回传，<b style="color:var(--ok)">完全不用你管</b>。
+    </p>
+    <ol style="margin:0 0 14px;padding-left:20px;color:var(--text-dim);font-size:13.5px;line-height:1.9">
+      <li>浏览器装扩展 <b style="color:var(--text)">Tampermonkey（篡改猴）</b>
+        —— Edge / Chrome 商店都能搜到，免费</li>
+      <li>装好后点下面这个按钮，Tampermonkey 会弹出安装页，点「安装」</li>
+      <li>打开教务系统课表页面，正常用一次（让脚本学到登录凭证）</li>
+      <li>之后就不用管了 —— 页面开着它就会自动同步</li>
+    </ol>
+    <a class="bookmarklet" id="userscriptLink" href="#" style="text-decoration:none">🐒 安装自动同步脚本</a>
+    <p style="margin:14px 0 0;color:var(--text-faint);font-size:12px;line-height:1.7">
+      装不上或不想装扩展也没关系 —— 用上面的控制台方式手动同步几次也够用。<br>
+      脚本只读取课表，不会修改教务系统的任何数据。
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>备选：做成书签（以后更省事）</h2>
+    <p style="margin:0 0 10px;color:var(--text-dim);font-size:13.5px;line-height:1.7">
+      如果教务系统页面没有严格的 CSP 限制，可以用书签方式 ——
+      以后在课表页面<b>点一下书签</b>就行，不用每次开控制台。<br>
+      做法：把这个按钮拖到书签栏；或者复制下面的代码，
+      在浏览器里新建书签，<b>网址</b>粘贴这段代码。
+    </p>
+    <div style="margin:4px 0 12px">
+      <a class="bookmarklet" id="bm" href="#">📌 同步班级课表</a>
+    </div>
+    <textarea class="codebox" id="bmCode" readonly></textarea>
+    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-ghost primary" id="btnCopy">复制书签代码</button>
+      <button class="btn-ghost" id="btnCheck">手动检查状态</button>
+    </div>
+  </div>
+
+  <div class="credit">
+    Made BY <b>Paperpiece</b> · 仅现代通信1班使用
+  </div>
+</div>
+
+<script>window.__KT_CODE__="YOUR_ACCESS_CODE";</script>
+<script>
+(function () {
+  var K = new URLSearchParams(location.search).get('k') || '';
+  if (!K) { var kk = document.cookie.match(/(?:^|;\\s*)kt_pass=([^;]+)/); if (kk) K = decodeURIComponent(kk[1]); }
+  if (!K) K = 'YOUR_ACCESS_CODE';   // 兜底：写死班级口令，保证书签一定带得上
+  // 服务端会把它注入进来（__KT_CODE__ 被替换）
+  if (!K && window.__KT_CODE__) K = window.__KT_CODE__;
+  if (!K) { var mm = document.cookie.match(/(?:^|;\s*)kt_pass=([^;]+)/); if (mm) K = decodeURIComponent(mm[1]); }
+  // 网址没带 ?k= 就退回去读班级口令 cookie ——
+  // 否则书签上传时没口令，服务器 401，而页面还以为成功了。
+  if (!K) {
+    var mm = document.cookie.match(/(?:^|;\\s*)kt_pass=([^;]+)/);
+    if (mm) K = decodeURIComponent(mm[1]);
+  }
+  var uploadUrl = location.origin + '/api/import-session' + (K ? '?k=' + encodeURIComponent(K) : '');
+  document.getElementById('backLink').href = '/' + (K ? '?k=' + encodeURIComponent(K) : '');
+  document.getElementById('editLink2').href = '/edit' + (K ? '?k=' + encodeURIComponent(K) : '');
+  document.getElementById('upUrl').textContent = uploadUrl;
+
+  function setSt(cls, text) {
+    var el = document.getElementById('st');
+    el.className = 'st ' + (cls || '');
+    document.getElementById('stText').textContent = text;
+  }
+  setSt('', '正在准备脚本…');
+
+  // 油猴脚本安装链接（带上口令，服务端会据此生成正确的回传地址）
+  (function () {
+    var link = document.getElementById('userscriptLink');
+    link.href = '/kb-sync.user.js' + (K ? '?k=' + encodeURIComponent(K) : '');
+    // 轮询间隔跟服务端保持一致，先从 /api/schedule 拿一下
+    fetch('/api/schedule' + (K ? '?k=' + encodeURIComponent(K) : ''))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { })
+      .catch(function () { });
+  })();
+
+  // 取同源的抓取脚本，生成两种用法
+  fetch('/static/grab.js?v=20261016a').then(function (r) { return r.text(); }).then(function (code) {
+    // ---- 主方案：把完整代码粘进控制台 ----
+    // 不能用 fetch+eval：教务系统页面的 CSP（script-src 'self'）会拦掉 eval。
+    // 但手工粘进控制台的代码不受页面 CSP 限制，所以这条路一定通。
+    var compact = code
+      .replace(/\/\*[\s\S]*?\*\//g, '')       // 去掉块注释
+      .replace(/^[ \t]*\/\/.*$/gm, '')         // 去掉整行注释
+      .replace(/\n[ \t]+/g, '\n')              // 去掉行首缩进
+      .replace(/\n{3,}/g, '\n\n')              // 压缩空行
+      .trim();
+    var pasteCode = "window.__KT_UPLOAD__=" + JSON.stringify(uploadUrl) + ";\n" + compact;
+
+    document.getElementById('pasteCode').value = pasteCode;
+
+    // ---- 备选：书签 ----
+    var oneLine = ('(function(){window.__KT_UPLOAD__=' +
+      JSON.stringify(uploadUrl) + ';' + code + '})();')
+      .replace(/\s*\n\s*/g, ' ');
+    var bookmarklet = 'javascript:' + encodeURIComponent(oneLine);
+
+    var bm = document.getElementById('bm');
+    bm.href = bookmarklet;
+    bm.onclick = function (e) {
+      e.preventDefault();
+      alert('不要在这个页面点击哦～\n\n请先把它【拖到书签栏】，然后去教务系统的课表页面点它。');
+    };
+    document.getElementById('bmCode').value = bookmarklet;
+
+    setSt('', '准备好了，按上面步骤操作吧');
+
+    document.getElementById('btnCopyCode').onclick = function () {
+      copyText(pasteCode, this);
+    };
+    document.getElementById('btnCopy').onclick = function () {
+      copyText(bookmarklet, this);
+    };
+  }).catch(function (e) {
+    setSt('bad', '脚本加载失败：' + e);
+  });
+
+  function copyText(t, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = '✓ 已复制'; setTimeout(function () { btn.textContent = o; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(done, function () { fb(t, done); });
+    } else fb(t, done);
+  }
+  function fb(t, done) {
+    var ta = document.createElement('textarea');
+    ta.value = t; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { alert('复制失败，请手动选中'); }
+    document.body.removeChild(ta);
+  }
+
+  // ------------------------------------------------------------ 状态轮询
+  var lastRev = null;
+  function check() {
+    var u = '/api/schedule' + (K ? '?k=' + encodeURIComponent(K) : '');
+    fetch(u).then(function (r) { return r.json(); }).then(function (d) {
+      document.getElementById('curCourse').textContent = (d.count || 0) + ' 门课（版本 ' + d.revision + '）';
+      document.getElementById('curSess').textContent =
+        d.hasSession ? '✅ 已保存会话，自动抓取已启用'
+          : (d.noSession ? '还没导入会话' : '未知');
+      document.getElementById('curTime').textContent =
+        d.updatedAt ? new Date(d.updatedAt * 1000).toLocaleString() : '—';
+
+      if (lastRev === null) {
+        lastRev = d.revision;
+        setSt('', '等待同步…（当前版本 ' + d.revision + '）');
+      } else if (d.revision !== lastRev) {
+        lastRev = d.revision;
+        setSt('ok', '🎉 同步成功！课表已更新（版本 ' + d.revision + '）');
+        try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=').play(); } catch (e) { }
+      }
+      if (d.hasSession) setSt('ok', '✅ 已保存会话，自动抓取已启用（版本 ' + d.revision + '）');
+    }).catch(function () { });
+  }
+  document.getElementById('btnCheck').onclick = check;
+  check();
+  setInterval(check, 3000);
+})();
+</script>
+</body>
+</html>

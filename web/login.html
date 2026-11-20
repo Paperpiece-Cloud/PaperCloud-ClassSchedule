@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>登录 · PaperCloud</title>
+<link rel="icon" type="image/png" href="/favicon-192.png">
+<style>
+:root{
+  --bg1:#eaf1f9; --bg2:#dfe9f5; --paper:rgba(255,255,255,.72);
+  --ink:#16283a; --ink2:#4a6178; --ink3:#8397aa; --line:rgba(20,60,110,.13);
+  --accent:#2f7fe0; --bad:#e8454b; --ok:#12a05a;
+}
+html[data-theme="dark"]{
+  --bg1:#0b1119; --bg2:#111a25; --paper:rgba(30,40,52,.66);
+  --ink:#e8f0f8; --ink2:#b6c6d6; --ink3:#7b8fa3; --line:rgba(255,255,255,.10);
+  --accent:#5ba3f5; --bad:#ff6b70; --ok:#2ed27f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:24px 16px; color:var(--ink);
+  font:14px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:
+    radial-gradient(1100px 620px at 12% -8%, rgba(96,165,250,.22), transparent 62%),
+    radial-gradient(900px 540px at 92% 108%, rgba(167,139,250,.20), transparent 60%),
+    linear-gradient(160deg, var(--bg1), var(--bg2));
+}
+.box{
+  width:min(420px,100%); padding:28px 26px 24px; border-radius:24px;
+  background:var(--paper); border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(34px) saturate(190%);
+  backdrop-filter:blur(34px) saturate(190%);
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 24px 64px rgba(20,50,85,.16);
+}
+.brand{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:20px}
+.brand .logo{
+  width:62px;height:62px;border-radius:18px;object-fit:contain;
+  background:rgba(255,255,255,.55); padding:7px;
+  box-shadow:0 8px 22px rgba(20,50,85,.14);
+}
+.brand h1{font-size:19px;margin:0;font-weight:850;letter-spacing:-.02em}
+.brand p{margin:0;font-size:12px;color:var(--ink3)}
+
+.tabs{display:flex;gap:6px;padding:4px;border-radius:13px;margin-bottom:18px;
+  background:rgba(20,60,110,.06);border:1px solid var(--line)}
+.tabs button{
+  flex:1;padding:9px 0;border:0;border-radius:10px;cursor:pointer;
+  font:800 13px/1 inherit;font-family:inherit;
+  background:transparent;color:var(--ink3);transition:.18s}
+.tabs button.on{
+  background:var(--paper); color:var(--ink);
+  box-shadow:0 2px 10px rgba(20,50,85,.12)}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:750;color:var(--ink2);margin-bottom:5px}
+.field input{
+  width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.5);color:var(--ink);font:inherit;font-size:14px;outline:none}
+html[data-theme="dark"] .field input{background:rgba(255,255,255,.06)}
+.field input:focus{border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent)}
+
+.row2{display:flex;gap:9px}
+.row2 .field{flex:1}
+
+.btn{
+  width:100%;padding:12px 0;margin-top:6px;border:0;border-radius:13px;cursor:pointer;
+  font:850 14px/1 inherit;font-family:inherit;color:#fff;
+  background:linear-gradient(160deg,#3b82f6,#2563eb);
+  box-shadow:0 8px 22px rgba(59,130,246,.34);
+  transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.btn.ghost{
+  background:rgba(20,60,110,.07);color:var(--ink2);box-shadow:none;
+  border:1px solid var(--line);margin-top:9px}
+html[data-theme="dark"] .btn.ghost{background:rgba(255,255,255,.07)}
+
+.msg{min-height:20px;margin:10px 0 0;font-size:12.5px;font-weight:700;text-align:center}
+.msg.bad{color:var(--bad)} .msg.ok{color:var(--ok)} .msg.wait{color:var(--ink3)}
+
+.hint{margin-top:14px;font-size:11.5px;color:var(--ink3);text-align:center;line-height:1.7}
+.hint a{color:var(--accent);text-decoration:none}
+.hide{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="brand">
+    <img class="logo" src="/static/school-logo.png?v=20261023" alt="班级标志">
+    <h1>PaperCloud</h1>
+    <p>现代通信一班 · 班务系统</p>
+  </div>
+
+  <div class="tabs">
+    <button type="button" id="tabLogin" class="on">登录</button>
+    <button type="button" id="tabReg">注册</button>
+  </div>
+
+  <!-- 登录 -->
+  <div id="paneLogin">
+    <div class="field">
+      <label>邮箱</label>
+      <input type="text" id="lEmail" placeholder="你的邮箱" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>密码</label>
+      <input type="password" id="lPass" placeholder="密码" autocomplete="current-password">
+    </div>
+    <button class="btn" type="button" id="btnLogin">登 录</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <!-- 注册 -->
+  <div id="paneReg" class="hide">
+    <div class="row2">
+      <div class="field">
+        <label>学号</label>
+        <input type="text" id="rNo" placeholder="20265103xxxxxx" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>姓名</label>
+        <input type="text" id="rName" placeholder="真实姓名">
+      </div>
+    </div>
+    <div class="field">
+      <label>邮箱</label>
+      <input type="text" id="rEmail" placeholder="用于接收验证码">
+    </div>
+    <button class="btn ghost" type="button" id="btnCode">获取验证码</button>
+
+    <div class="field" style="margin-top:13px">
+      <label>验证码</label>
+      <input type="text" id="rCode" placeholder="6 位数字" inputmode="numeric" maxlength="6">
+    </div>
+    <div class="field">
+      <label>设置密码</label>
+      <input type="password" id="rPass" placeholder="至少 6 位" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label>确认密码</label>
+      <input type="password" id="rPass2" placeholder="再输一次" autocomplete="new-password">
+    </div>
+    <button class="btn" type="button" id="btnReg">注册并登录</button>
+    <div class="msg" id="msgReg"></div>
+  </div>
+
+  <p class="hint">
+    没有账号？点上面的「注册」，用学号+姓名验证身份。<br>
+    <a href="/?k=YOUR_ACCESS_CODE">先随便逛逛</a>
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  function msg(id, text, kind) {
+    var el = $(id);
+    el.className = 'msg ' + (kind || 'wait');
+    el.textContent = text || '';
+  }
+
+  function post(url, body) {
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+    var o = {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' }
+    };
+    if (ctrl) o.signal = ctrl.signal;
+    if (body !== undefined) o.body = JSON.stringify(body);
+    return fetch(url, o).then(function (r) {
+      clearTimeout(timer);
+      return r.text().then(function (t) {
+        var d = {};
+        try { d = JSON.parse(t); } catch (e) { d = { ok: false, message: '服务器返回异常（' + r.status + '）' }; }
+        return d;
+      });
+    }).catch(function (e) {
+      clearTimeout(timer);
+      return { ok: false, message: '请求失败：' + (e && e.name === 'AbortError' ? '超时' : e) };
+    });
+  }
+
+  function go(where) { location.href = where || '/?k=YOUR_ACCESS_CODE'; }
+
+  // 切换页签
+  $('tabLogin').onclick = function () {
+    $('tabLogin').classList.add('on'); $('tabReg').classList.remove('on');
+    $('paneLogin').classList.remove('hide'); $('paneReg').classList.add('hide');
+  };
+  $('tabReg').onclick = function () {
+    $('tabReg').classList.add('on'); $('tabLogin').classList.remove('on');
+    $('paneReg').classList.remove('hide'); $('paneLogin').classList.add('hide');
+  };
+
+  // 登录
+  $('btnLogin').onclick = function () {
+    var email = $('lEmail').value.trim(), pw = $('lPass').value;
+    if (!email || !pw) { msg('msgLogin', '邮箱和密码都要填', 'bad'); return; }
+    $('btnLogin').disabled = true;
+    msg('msgLogin', '登录中…', 'wait');
+    post('/api/auth/login', { email: email, password: pw }).then(function (d) {
+      $('btnLogin').disabled = false;
+      if (d.ok) {
+        msg('msgLogin', '登录成功', 'ok');
+        setTimeout(function () { go(d.next); }, 400);
+      } else {
+        msg('msgLogin', d.message || '登录失败', 'bad');
+      }
+    });
+  };
+
+  // 获取验证码
+  var cd = 0, cdTimer = null;
+  $('btnCode').onclick = function () {
+    var no = $('rNo').value.trim(), name = $('rName').value.trim(), email = $('rEmail').value.trim();
+    if (!no || !name || !email) { msg('msgReg', '学号、姓名、邮箱都要填', 'bad'); return; }
+    $('btnCode').disabled = true;
+    msg('msgReg', '发送中…', 'wait');
+    post('/api/auth/register', { no: no, name: name, email: email }).then(function (d) {
+      if (d.ok) {
+        msg('msgReg', d.mailed ? '验证码已发到邮箱，10 分钟内有效'
+                               : '验证码已生成，请向管理员索取', 'ok');
+        cd = 60;
+        cdTimer = setInterval(function () {
+          cd--;
+          if (cd <= 0) { clearInterval(cdTimer); $('btnCode').disabled = false; $('btnCode').textContent = '获取验证码'; }
+          else { $('btnCode').textContent = '重发（' + cd + 's）'; }
+        }, 1000);
+        $('btnCode').textContent = '重发（' + cd + 's）';
+      } else {
+        $('btnCode').disabled = false;
+        msg('msgReg', d.message || '发送失败', 'bad');
+      }
+    });
+  };
+
+  // 注册
+  $('btnReg').onclick = function () {
+    var email = $('rEmail').value.trim();
+    var code = $('rCode').value.trim();
+    var p1 = $('rPass').value, p2 = $('rPass2').value;
+    if (!email || !code) { msg('msgReg', '邮箱和验证码要填', 'bad'); return; }
+    if (p1.length < 6) { msg('msgReg', '密码至少 6 位', 'bad'); return; }
+    if (p1 !== p2) { msg('msgReg', '两次密码不一致', 'bad'); return; }
+    $('btnReg').disabled = true;
+    msg('msgReg', '提交中…', 'wait');
+    post('/api/auth/verify', { email: email, code: code, password: p1 }).then(function (d) {
+      $('btnReg').disabled = false;
+      if (d.ok) {
+        msg('msgReg', '注册成功，正在进入…', 'ok');
+        setTimeout(function () { go(d.next); }, 500);
+      } else {
+        msg('msgReg', d.message || '注册失败', 'bad');
+      }
+    });
+  };
+
+  // 回车提交
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    if (!$('paneLogin').classList.contains('hide')) $('btnLogin').click();
+    else $('btnReg').click();
+  });
+
+  // 主题
+  try {
+    var t = localStorage.getItem('kt_theme') || 'auto';
+    var dark = t === 'dark' || (t === 'auto' && window.matchMedia &&
+               window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

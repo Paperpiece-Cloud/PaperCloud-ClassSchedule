@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080c12">
+<title>管理后台 · 在线课表-By Paperpiece</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>
+(function () {
+  try {
+    var m = localStorage.getItem('kt-theme') || 'auto';
+    var dark = m === 'dark' || (m === 'auto' &&
+      window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) { }
+})();
+</script>
+<link rel="stylesheet" href="/static/style.css?v=20261016a">
+<style>
+  .grid-cards {
+    display: grid; gap: 14px; margin-top: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .stat {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 15px 16px;
+    box-shadow: var(--shadow-1);
+    animation: riseIn .45s var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  .stat .k { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
+  .stat .v {
+    font-family: var(--font-num); font-size: 27px; font-weight: 800;
+    letter-spacing: -.02em; margin-top: 5px; line-height: 1.15;
+  }
+  .stat .u { font-size: 12px; color: var(--text-faint); font-family: var(--font-sans); font-weight: 500; }
+  .stat.ok .v { color: var(--ok); }
+  .stat.warn .v { color: var(--warn); }
+  .stat.bad .v { color: var(--danger); }
+  .stat.acc .v { color: var(--accent); }
+
+  .bar {
+    height: 7px; border-radius: 5px; background: var(--surface-3);
+    overflow: hidden; margin-top: 6px;
+  }
+  .bar > i {
+    display: block; height: 100%; border-radius: 5px;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--ok)));
+    transition: width .6s var(--ease-out);
+  }
+
+  table.adm { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.adm th {
+    text-align: left; color: var(--text-dim); font-weight: 600; font-size: 12px;
+    padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  table.adm td { padding: 9px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  table.adm tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+  .tblwrap2 { overflow-x: auto; margin: 0 -4px; }
+  .mono { font-family: var(--font-num); font-size: 12px; }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    background: var(--surface-2); border: 1px solid var(--line); color: var(--text-dim);
+  }
+  .tag.bot { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 35%, var(--line)); }
+  .tag.mob { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+  .tag.bad { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
+  .tag.okk { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 35%, var(--line)); }
+  .rowbtns { display: flex; gap: 5px; flex-wrap: wrap; }
+  .minibtn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface-2);
+    color: var(--text-dim); border-radius: 7px; padding: 4px 9px;
+    font-size: 11.5px; cursor: pointer; font-family: inherit; white-space: nowrap;
+    transition: all .2s var(--ease);
+  }
+  .minibtn:hover { color: var(--text); border-color: var(--accent); }
+  .minibtn.danger:hover { color: var(--danger); border-color: var(--danger); }
+  .hours { display: flex; align-items: flex-end; gap: 3px; height: 64px; margin-top: 8px; }
+  .hours > i {
+    flex: 1; background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 40%, transparent));
+    border-radius: 3px 3px 0 0; min-height: 2px;
+    transition: height .5s var(--ease-out);
+    position: relative;
+  }
+  .hours > i:hover { background: var(--ok); }
+  .hourlabels { display: flex; gap: 3px; font-size: 9.5px; color: var(--text-faint); margin-top: 3px; }
+  .hourlabels > span { flex: 1; text-align: center; font-family: var(--font-num); }
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ok); margin-right: 6px; animation: pulse 2s infinite;
+  }
+  /* 操作反馈文字 */
+  .msg { min-height: 18px; font-size: 13px; transition: color .2s; }
+  .msg:empty { display: none; }
+  .loglist { max-height: 420px; overflow: auto; font-family: var(--font-num); font-size: 12px; }
+  .logline {
+    display: flex; gap: 9px; padding: 6px 4px; border-bottom: 1px solid var(--line-soft);
+    white-space: nowrap;
+  }
+  .logline:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .logline .lt { color: var(--text-faint); flex: none; }
+  .logline .lip { color: var(--accent); flex: none; width: 108px; overflow: hidden; text-overflow: ellipsis; }
+  .logline .ls { width: 34px; flex: none; text-align: center; }
+  .logline .lp { color: var(--text-dim); flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .logline .ld { color: var(--text-faint); flex: none; max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
+  .s2xx { color: var(--ok); } .s3xx { color: var(--text-dim); }
+  .s4xx { color: var(--warn); } .s5xx { color: var(--danger); }
+  @media (max-width: 760px) {
+    .grid-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat { padding: 12px; }
+    .stat .v { font-size: 21px; }
+    .logline .ld, .logline .lip { display: none; }
+  }
+</style>
+<style id="ktGlass">
+/* =====================================================================
+   PaperCloud · 液态玻璃 + 全站渐变
+   只作用在「本身就是卡片」的元素和交互控件上，
+   不碰 .toolbar / .minis / .chain 这类纯布局容器。
+   ===================================================================== */
+
+@keyframes ktDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- 2. 按钮：液态玻璃 ---------- */
+.btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  position: relative !important;
+  /* 不用 backdrop-filter —— Safari 上会让按钮里的文字变淡。
+     改用两层不透明渐变模拟玻璃：斜向反光条 + 纵向厚度 */
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.98) 0%,
+      rgba(255,255,255,.42) 26%,
+      rgba(255,255,255,.06) 47%,
+      rgba(255,255,255,.06) 58%,
+      rgba(255,255,255,.58) 83%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #ffffff 0%, #f2f7fd 46%, #e3ecf7 100%) !important;
+  color: #101c28 !important;
+  -webkit-text-fill-color: #101c28 !important;
+  border: 1px solid rgba(255,255,255,.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,.5),
+    0 1px 1.5px rgba(20,50,90,.08),
+    0 7px 20px rgba(20,50,90,.12) !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s !important;
+}
+.btn:hover, .btn-ghost:hover, .callbtn:hover, .ico:hover, .st:hover, .chip:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.70) 48%,
+      rgba(255,255,255,.58) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 2px 3px rgba(20,50,90,.09),
+    0 12px 30px rgba(20,50,90,.16) !important;
+  transform: translateY(-1px);
+}
+.btn:active, .btn-ghost:active, .callbtn:active, .ico:active, .st:active {
+  transform: scale(.965);
+  box-shadow: inset 0 1px 2px rgba(20,50,90,.14),
+              0 3px 10px rgba(20,50,90,.10) !important;
+}
+
+/* 主按钮：蓝玻璃（不透明，避免 Safari 冲淡文字） */
+.btn.pri, .btn-ghost.primary, .btn.primary {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.55) 0%,
+      rgba(255,255,255,.12) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.22) 100%),
+    linear-gradient(180deg, #6cb8ff 0%, #3d8ff2 50%, #2a72dc 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 2px 3px rgba(20,70,140,.20),
+    0 10px 26px rgba(40,120,220,.34) !important;
+}
+.btn.dg { color: #e8454b !important; }
+
+.tab.on {
+  background: linear-gradient(180deg,
+      rgba(96,180,255,.95) 0%,
+      rgba(50,132,244,.93) 100%) !important;
+  color: #fff !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6),
+              0 6px 18px rgba(40,120,220,.32) !important;
+}
+.st[data-on="1"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55),
+              0 6px 16px rgba(20,50,90,.22) !important;
+}
+
+/* ---------- 3. 卡片：磨砂玻璃（不动圆角） ---------- */
+.card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  -webkit-backdrop-filter: blur(26px) saturate(185%) !important;
+  backdrop-filter: blur(26px) saturate(185%) !important;
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.76) 0%,
+      rgba(255,255,255,.62) 100%) !important;
+  border-color: rgba(255,255,255,.7) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 1px 2px rgba(20,50,90,.05),
+    0 14px 38px rgba(20,50,90,.10) !important;
+}
+
+/* ---------- 4. 输入框 ---------- */
+input[type=text], input[type=date], input[type=tel],
+input[type=datetime-local], select, textarea {
+  -webkit-backdrop-filter: blur(14px) saturate(170%) !important;
+  backdrop-filter: blur(14px) saturate(170%) !important;
+  background: rgba(255,255,255,.62) !important;
+  border: 1px solid rgba(255,255,255,.8) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              inset 0 2px 6px rgba(20,50,90,.05) !important;
+}
+input:focus, select:focus, textarea:focus {
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(96,180,255,.9) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 0 0 3px rgba(96,180,255,.22) !important;
+}
+
+/* =====================================================================
+   5. 深色主题 —— 用和上面完全一样的选择器清单，避免漏网
+   ===================================================================== */
+html[data-theme="dark"], html[data-theme="dark"] body {
+  background: linear-gradient(125deg,
+      #16283d 0%, #24203c 26%, #10312a 52%, #3a2c14 76%, #16283d 100%) !important;
+  background-size: 400% 400% !important;
+  background-attachment: fixed !important;
+  animation: ktDrift 22s ease-in-out infinite !important;
+}
+
+html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, a.btn, a.btn-ghost, input[type=button], input[type=submit] {
+  background:
+    linear-gradient(118deg,
+      rgba(255,255,255,.22) 0%,
+      rgba(255,255,255,.06) 28%,
+      rgba(255,255,255,0) 48%,
+      rgba(255,255,255,.12) 100%),
+    linear-gradient(180deg, #33404f 0%, #28323f 50%, #1f2833 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 8px 22px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] .btn:hover,
+html[data-theme="dark"] .btn-ghost:hover,
+html[data-theme="dark"] .ico:hover,
+html[data-theme="dark"] .callbtn:hover {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.26) 0%,
+      rgba(255,255,255,.16) 100%) !important;
+}
+html[data-theme="dark"] .btn.pri,
+html[data-theme="dark"] .btn-ghost.primary,
+html[data-theme="dark"] .btn.primary {
+  background: linear-gradient(180deg,
+      #5aabff 0%, #2270e2 100%) !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+}
+html[data-theme="dark"] .btn.dg { color: #ff8b8f !important; }
+
+html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs {
+  background: linear-gradient(180deg,
+      rgba(255,255,255,.085) 0%,
+      rgba(255,255,255,.04) 100%) !important;
+  border-color: rgba(255,255,255,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 14px 38px rgba(0,0,0,.44) !important;
+}
+
+html[data-theme="dark"] input, html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  color: #e9f1fa !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #7d8fa3 !important; }
+html[data-theme="dark"] .tab.on {
+  background: linear-gradient(180deg,
+      rgba(86,168,255,.95) 0%,
+      rgba(34,112,226,.95) 100%) !important;
+}
+
+/* Safari / 老浏览器不支持 backdrop-filter 时退化成接近不透明 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(255,255,255,.94) !important; }
+  .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(255,255,255,.96) !important; }
+  html[data-theme="dark"] .btn, .btn-ghost, .btn.pri, .callbtn, .ico, .st, .chip, .pill, .tag, a.btn, a.btn-ghost, input[type=button], input[type=submit] { background: rgba(40,54,70,.94) !important; }
+  html[data-theme="dark"] .card, .panel, .scard, .grp, .sbox, .gcard, .arow, .dlg, .mini, .tduty, .code, .gridwrap, .course, .view-tabs { background: rgba(30,42,56,.95) !important; }
+}
+</style>
+<style id="ktGlassExtra">
+/* ---------- 6. 右上角图标按钮：浅色模式下用深色，别和浅背景糊一起 ---------- */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #3b4552 0%, #262e39 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    0 6px 16px rgba(18,28,45,.30) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5563 0%, #303945 100%) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式下保持玻璃，但给个亮一点的边 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  color: #eaf2fb !important;
+  border-color: rgba(255,255,255,.22) !important;
+}
+
+/* ---------- 7. 政治面貌等小标签：跟着背景走，不再用固定色 ---------- */
+.pill, .tag {
+  background: rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(160%) !important;
+  backdrop-filter: blur(10px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  color: #4a6076 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9),
+              0 1px 3px rgba(20,50,90,.07) !important;
+}
+html[data-theme="dark"] .pill, html[data-theme="dark"] .tag {
+  background: rgba(255,255,255,.11) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  color: #b3c6d8 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+/* 性别 / 状态那几种彩色小标签也适配 */
+html[data-theme="dark"] .pill.m { background: rgba(80,160,255,.22) !important; color: #8ec8ff !important; border-color: rgba(120,190,255,.28) !important; }
+html[data-theme="dark"] .pill.f { background: rgba(255,120,190,.20) !important; color: #f0a5cd !important; border-color: rgba(255,150,205,.26) !important; }
+html[data-theme="dark"] .pill.off { background: rgba(255,255,255,.08) !important; color: #8b9aab !important; }
+/* 头衔：金标签，深色下换成低饱和暖金 */
+html[data-theme="dark"] .ttl {
+  background: linear-gradient(135deg, rgba(255,215,120,.18), rgba(255,190,60,.12)) !important;
+  color: #f0c75e !important;
+  border: 1px solid rgba(240,199,94,.30) !important;
+}
+
+/* 右上角深色按钮同样不用 backdrop-filter，避免文字被冲淡 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+</style>
+<style id="ktTopBtn">
+/* ===== 右上角按钮：随深浅模式变色 + 缩小 ===== */
+#themeBtn, .head-right .icon-btn, .head-right .ibtn,
+.topin .ico, .topbar .ico {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  border-radius: 9px !important;
+  font-size: 13.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .2s, background .2s !important;
+}
+/* 浅色模式：白玻璃 + 深字 */
+html:not([data-theme="dark"]) #themeBtn,
+html:not([data-theme="dark"]) .head-right .icon-btn,
+html:not([data-theme="dark"]) .head-right .ibtn,
+html:not([data-theme="dark"]) .topin .ico,
+html:not([data-theme="dark"]) .topbar .ico {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f6fc 55%, #e6eef8 100%) !important;
+  color: #2b3947 !important;
+  -webkit-text-fill-color: #2b3947 !important;
+  border: 1px solid rgba(255,255,255,.95) !important;
+  box-shadow: inset 0 1px 0 #fff,
+              0 1px 2px rgba(20,50,90,.08),
+              0 4px 12px rgba(20,50,90,.12) !important;
+}
+html:not([data-theme="dark"]) #themeBtn:hover,
+html:not([data-theme="dark"]) .head-right .icon-btn:hover,
+html:not([data-theme="dark"]) .head-right .ibtn:hover,
+html:not([data-theme="dark"]) .topin .ico:hover,
+html:not([data-theme="dark"]) .topbar .ico:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #eaf2fb 100%) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(20,50,90,.18) !important;
+  transform: translateY(-1px);
+}
+/* 深色模式：深玻璃 + 浅字 */
+html[data-theme="dark"] #themeBtn,
+html[data-theme="dark"] .head-right .icon-btn,
+html[data-theme="dark"] .head-right .ibtn,
+html[data-theme="dark"] .topin .ico,
+html[data-theme="dark"] .topbar .ico {
+  background: linear-gradient(180deg, #3b4756 0%, #2a3441 55%, #222b36 100%) !important;
+  color: #eaf2fb !important;
+  -webkit-text-fill-color: #eaf2fb !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22),
+              0 6px 16px rgba(0,0,0,.40) !important;
+}
+html[data-theme="dark"] #themeBtn:hover,
+html[data-theme="dark"] .head-right .icon-btn:hover,
+html[data-theme="dark"] .head-right .ibtn:hover,
+html[data-theme="dark"] .topin .ico:hover,
+html[data-theme="dark"] .topbar .ico:hover {
+  background: linear-gradient(180deg, #4a5766 0%, #333e4c 100%) !important;
+  transform: translateY(-1px);
+}
+:active#themeBtn, .head-right .icon-btn:active, .topin .ico:active {
+  transform: scale(.93) !important;
+}
+/* edit.html 那个带文字的「返回课表」按钮保持原样，只把它挪到右边 */
+.head-right #backLink { margin-left: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <div class="brand">
+      <i class="mark"></i>
+      <span class="bname">在线课表</span>
+      <span class="byline">管理后台</span>
+    </div>
+    <div class="head-right">
+      <div class="status live" id="livePill"><span class="dot"></span>监控中</div>
+      <a class="icon-btn" id="qqLink" href="/qq-admin" title="QQ 群设置">🤖</a>
+      <button class="icon-btn" id="themeBtn" title="切换主题">◐</button>
+      <a class="icon-btn" id="backLink" href="/timetable" title="回到课表">←</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 概览卡片 -->
+  <div class="grid-cards" id="cards"></div>
+
+  <!-- 操作 -->
+  <div class="panel">
+    <h2>快捷操作</h2>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <a class="btn" href="/qq-admin" style="text-decoration:none">🤖 QQ 群设置</a>
+      <a class="btn-ghost primary" id="lnkGrab" href="/grab">🔁 调课了？手动重新抓取课表</a>
+      <a class="btn-ghost primary" href="/class-admin" target="_blank">📋 班务管理（名单 / 考勤 / 值日）</a>
+      <button class="btn-ghost" id="btnRefresh">↻ 让服务自己抓一次</button>
+      <a class="btn-ghost" id="lnkEdit" href="/edit">✎ 手动修改课表</a>
+      <button class="btn-ghost" id="btnIcs">📅 下载日历</button>
+      <button class="btn-ghost" id="btnClearSession" style="color:var(--danger)">🔌 清除抓取会话</button>
+      <button class="btn-ghost" id="btnClearTraffic" style="color:var(--danger)">清空流量记录</button>
+      <button class="btn-ghost" id="btnUnbanAll" style="color:var(--danger)">🔓 解除所有 IP 封禁</button>
+    </div>
+    <p style="margin:10px 0 0;color:var(--text-faint);font-size:12px;line-height:1.7">
+      「手动重新抓取」走浏览器，任何时候都可用 —— <b>学校调课后用这个</b>。<br>
+      「让服务自己抓一次」需要已保存的抓取会话，目前教务系统拿不到会话，通常不可用。
+    </p>
+    <div class="msg" id="opMsg" style="margin-top:10px;font-size:13px;min-height:18px"></div>
+  </div>
+
+  <!-- 在线访客 -->
+  <div class="panel">
+    <h2>在线访客
+      <span style="display:inline-flex;gap:0;margin-left:8px;vertical-align:middle">
+        <button type="button" id="onlineTab" class="minibtn" style="border-radius:8px 0 0 8px;
+          padding:4px 12px;font-size:12px;font-weight:800;background:var(--accent);color:#fff;border-color:transparent">
+          在线 <b id="onlineNum">0</b>
+        </button><button type="button" id="offlineTab" class="minibtn" style="border-radius:0 8px 8px 0;
+          padding:4px 12px;font-size:12px;font-weight:800;margin-left:-1px">
+          已离线 <b id="offlineNum">0</b>
+        </button>
+      </span>
+      <span class="tag" id="onlineCount">—</span>
+      <span style="font-size:11.5px;color:var(--text-faint);font-weight:500;margin-left:6px">
+        最近 1 分钟内有活动
+      </span>
+    </h2>
+    <div class="tblwrap2">
+      <table class="adm" id="onlineTbl">
+        <thead><tr>
+          <th>IP</th><th>机型 / 设备</th><th>系统</th><th>浏览器</th>
+          <th>上线时间</th><th>在线时长</th><th>状态 / 最近活跃</th><th>当前页面</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 考勤签到：直接在这里发起，不用跳去班务页 -->
+  <div class="panel">
+    <h2><span class="live-dot" id="ciDot"></span>考勤签到 <span class="tag" id="ciState">未发布</span></h2>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <label style="flex:1;min-width:180px">
+        <span style="display:block;font-size:12px;color:var(--text-faint);margin-bottom:5px">标题</span>
+        <input id="ciTitle" type="text" value="签到" placeholder="比如：早读签到"
+               style="width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft,transparent);color:inherit;font-size:14px">
+      </label>
+      <label>
+        <span style="display:block;font-size:12px;color:var(--text-faint);margin-bottom:5px">开始时间</span>
+        <input id="ciStart" type="datetime-local"
+               style="padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft,transparent);color:inherit;font-size:14px">
+      </label>
+      <label>
+        <span style="display:block;font-size:12px;color:var(--text-faint);margin-bottom:5px">结束时间</span>
+        <input id="ciEnd" type="datetime-local"
+               style="padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft,transparent);color:inherit;font-size:14px">
+      </label>
+    </div>
+
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn-ghost primary" id="ciPublish">📣 发布签到</button>
+      <button class="btn-ghost primary" id="ciQuick">⚡ 立即开始（30 分钟）</button>
+      <button class="btn-ghost" id="ciClose" style="color:var(--danger)">⏹ 结束当前签到</button>
+      <button class="btn-ghost" id="ciExport">📤 导出名单</button>
+      <a class="btn-ghost" href="/class-admin" target="_blank">⚙️ 更多班务设置</a>
+    </div>
+
+    <p style="margin:10px 0 0;color:var(--text-faint);font-size:12px;line-height:1.7">
+      发布后，同学打开 <b>your-domain.example/class</b> → 「考勤」标签，输入名字就能签到。<br>
+      只有在你设定的时间窗内，签到入口才会出现；过点自动关闭。
+    </p>
+
+    <div class="msg" id="ciMsg" style="margin-top:10px;font-size:13px;min-height:18px"></div>
+
+    <div style="margin-top:12px">
+      <div style="font-size:12.5px;color:var(--text-faint);margin-bottom:8px">
+        已签到 <b id="ciCount" style="color:#12a05a;font-size:15px">0</b> 人
+      </div>
+      <div id="ciList" style="max-height:280px;overflow:auto"></div>
+    </div>
+  </div>
+
+  <!-- 副班评价：放在快捷操作下面 -->
+  <div class="panel">
+    <h2>副班评价 <span class="tag" id="rateRange">全部</span></h2>
+    <div id="rateStats" style="font-size:13px;color:var(--text-faint)">加载中…</div>
+  </div>
+
+  <!-- 流量趋势 -->
+  <div class="panel">
+    <h2>24 小时访问趋势</h2>
+    <div class="hours" id="hours"></div>
+    <div class="hourlabels" id="hourLabels"></div>
+  </div>
+
+  <!-- 设备分布 + 热门页面 -->
+  <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+    <div class="panel" style="margin-top:0">
+      <h2>设备 / 机型分布</h2>
+      <div id="devList"></div>
+    </div>
+    <div class="panel" style="margin-top:0">
+      <h2>热门页面</h2>
+      <div id="pageList"></div>
+    </div>
+  </div>
+
+  <!-- 访问者 -->
+  <div class="panel">
+    <h2>访客明细
+      <select id="visitorRangeSel" style="
+        margin-left:8px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700;
+        border:1px solid var(--line);background:var(--paper);color:var(--text-dim);cursor:pointer">
+        <option value="today">今天</option>
+        <option value="week">本周</option>
+        <option value="month">本月</option>
+        <option value="all">全部</option>
+      </select>
+      <span class="tag" id="visitorRange">今天</span>
+    </h2>
+    <div class="tblwrap2">
+      <table class="adm" id="visitors">
+        <thead><tr>
+          <th>IP</th><th>设备 / 机型</th><th>系统</th><th>浏览器</th>
+          <th>次数</th><th>首次</th><th>最近</th><th>操作</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 安全 -->
+  <div class="panel">
+    <h2>安全防护</h2>
+    <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:7px">封禁中的 IP</div>
+        <div id="banList" style="font-size:13px"></div>
+      </div>
+      <div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:7px">口令错误尝试</div>
+        <div id="failList" style="font-size:13px"></div>
+      </div>
+      <div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:7px">黑白名单</div>
+        <div id="ipList" style="font-size:13px"></div>
+      </div>
+      <div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:7px">防护参数</div>
+        <div id="limList" style="font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 实时日志 -->
+  <div class="panel">
+    <h2><span class="live-dot"></span>实时访问日志（最近 200 条）</h2>
+    <div class="loglist" id="logList"></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+
+  <div class="credit">
+    Made BY <b>Paperpiece</b> · 仅现代通信1班使用
+  </div>
+</div>
+
+<script src="/static/admin.js?v=20261107f">  /* ---------------- 考勤签到 ---------------- */
+  var CI_LABEL = { none: '未发布', pending: '未开始', open: '进行中', closed: '已结束' };
+
+  function ciClock(ts) {
+    var d = new Date(ts * 1000);
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') +
+      ':' + String(d.getSeconds()).padStart(2, '0');
+  }
+  function ciLocal(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0') + 'T' + String(d.getHours()).padStart(2, '0') + ':' +
+      String(d.getMinutes()).padStart(2, '0');
+  }
+  function ciMsg(text, ok) {
+    var e = document.getElementById('ciMsg');
+    if (!e) return;
+    e.style.color = ok ? '#12a05a' : 'var(--danger)';
+    e.textContent = text || '';
+    if (text) setTimeout(function () { if (e.textContent === text) e.textContent = ''; }, 3500);
+  }
+
+  function ciLoad() {
+    return fetch('/api/class/checkin', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.message || '取不到');
+        var task = d.task, recs = d.records || [];
+        document.getElementById('ciState').textContent = CI_LABEL[d.state] || '—';
+        document.getElementById('ciDot').style.background =
+          d.state === 'open' ? '#12a05a' : (d.state === 'pending' ? '#e8a800' : '#9aa8b6');
+        document.getElementById('ciCount').textContent = d.count || 0;
+
+        if (!recs.length) {
+          document.getElementById('ciList').innerHTML =
+            '<div style="color:var(--text-faint);font-size:13px;padding:14px 0;text-align:center">' +
+            (task ? '还没有人签到' : '暂无签到 / 打卡任务') + '</div>';
+        } else {
+          document.getElementById('ciList').innerHTML =
+            '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+            '<thead><tr style="color:var(--text-faint);font-size:11px">' +
+            '<th style="text-align:left;padding:6px 8px">#</th>' +
+            '<th style="text-align:left;padding:6px 8px">姓名</th>' +
+            '<th style="text-align:left;padding:6px 8px">签到时间</th>' +
+            '<th style="text-align:right;padding:6px 8px">次数</th></tr></thead><tbody>' +
+            recs.map(function (r, i) {
+              return '<tr style="border-top:1px solid var(--line)">' +
+                '<td style="padding:7px 8px;color:var(--text-faint)">' + (i + 1) + '</td>' +
+                '<td style="padding:7px 8px;font-weight:700">' + r.name + '</td>' +
+                '<td style="padding:7px 8px;font-family:monospace;color:var(--text-faint)">' +
+                ciClock(r.at) + '</td>' +
+                '<td style="padding:7px 8px;text-align:right">' + (r.count || 1) + '</td></tr>';
+            }).join('') + '</tbody></table>';
+        }
+
+        var st = document.getElementById('ciStart');
+        if (st && !st.dataset.touched) {
+          var now = new Date(), end = new Date(Date.now() + 30 * 60000);
+          st.value = ciLocal(now);
+          document.getElementById('ciEnd').value = ciLocal(end);
+        }
+      })
+      .catch(function (e) {
+        document.getElementById('ciList').innerHTML =
+          '<div style="color:var(--text-faint);font-size:13px;padding:14px 0;text-align:center">' +
+          '暂无签到 / 打卡任务</div>';
+      });
+  }
+
+  function ciPost(url, body) {
+    return fetch(url, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {})
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok) throw new Error(d.message || '失败');
+      return d;
+    });
+  }
+
+  document.getElementById('ciPublish').onclick = function () {
+    var title = document.getElementById('ciTitle').value || '签到';
+    var st = document.getElementById('ciStart').value;
+    var en = document.getElementById('ciEnd').value;
+    if (!st || !en) return ciMsg('请填开始和结束时间', false);
+    ciPost('/api/class/checkin/publish', { title: title, start: st, end: en })
+      .then(function () { ciMsg('已发布：' + title, true); ciLoad(); })
+      .catch(function (e) { ciMsg(e.message, false); });
+  };
+  document.getElementById('ciQuick').onclick = function () {
+    var now = new Date(), end = new Date(Date.now() + 30 * 60000);
+    document.getElementById('ciStart').value = ciLocal(now);
+    document.getElementById('ciEnd').value = ciLocal(end);
+    document.getElementById('ciPublish').click();
+  };
+  document.getElementById('ciClose').onclick = function () {
+    if (!confirm('结束当前签到？结束后同学就点不了了。')) return;
+    ciPost('/api/class/checkin/close', {})
+      .then(function () { ciMsg('已结束签到', true); ciLoad(); })
+      .catch(function (e) { ciMsg(e.message, false); });
+  };
+  document.getElementById('ciStart').onchange = function () { this.dataset.touched = 1; };
+  document.getElementById('ciEnd').onchange = function () { this.dataset.touched = 1; };
+  document.getElementById('ciExport').onclick = function () {
+    fetch('/api/class/checkin', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var recs = d.records || [];
+        if (!recs.length) return ciMsg('还没有签到记录', false);
+        var head = '序号,姓名,签到时间,次数\n';
+        var body = recs.map(function (r, i) {
+          return [i + 1, r.name, ciClock(r.at), r.count || 1].join(',');
+        }).join('\n');
+        var blob = new Blob(['\ufeff' + head + body], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = '签到-' + ((d.task || {}).title || '记录') + '.csv';
+        a.click();
+      });
+  };
+  ciLoad();
+  setInterval(ciLoad, 15000);
+</script>
+</body>
+</html>

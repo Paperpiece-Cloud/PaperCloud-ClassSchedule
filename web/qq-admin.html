@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QQ 群 · 管理后台</title>
+<link rel="icon" type="image/png" href="/favicon-192.png">
+<style>
+:root{
+  --bg:#eef3f8; --paper:#ffffff; --ink:#16283a; --ink2:#3b5570; --ink3:#7b8fa3;
+  --line:rgba(20,60,110,.12); --accent:#2f7fe0; --ok:#12a05a; --bad:#e8454b; --warn:#d99400;
+  --r:16px; --shadow:0 10px 34px rgba(20,50,85,.10);
+}
+html[data-theme="dark"]{
+  --bg:#0d1219; --paper:#161c26; --ink:#e8f0f8; --ink2:#b6c6d6; --ink3:#7b8fa3;
+  --line:rgba(255,255,255,.10); --accent:#5ba3f5; --ok:#2ed27f; --bad:#ff6b70; --warn:#ffc44d;
+  --shadow:0 10px 34px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:14px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  padding:0 0 40px;
+}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header{
+  display:flex;align-items:center;gap:12px;padding:18px 0 14px;
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+header h1{font-size:17px;margin:0;font-weight:850;letter-spacing:-.02em;flex:1}
+.back{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+  background:var(--paper);color:var(--ink2);text-decoration:none;font-size:15px;
+}
+.card{
+  background:var(--paper); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:16px 18px; margin:14px 0;
+}
+.card h2{font-size:14px;margin:0 0 12px;font-weight:850;color:var(--ink)}
+.tip{font-size:12px;color:var(--ink3);margin:-6px 0 12px;line-height:1.6}
+
+/* 状态 */
+.st{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:12px;
+  background:color-mix(in srgb, var(--accent) 7%, transparent);border:1px solid var(--line);
+  margin-bottom:12px}
+.st .dot{width:9px;height:9px;border-radius:50%;background:var(--ink3);flex:none}
+.st.on .dot{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb, var(--ok) 18%, transparent)}
+.st.off .dot{background:var(--bad);box-shadow:0 0 0 4px color-mix(in srgb, var(--bad) 16%, transparent)}
+.st .t{flex:1;font-size:13px;font-weight:700}
+.st .who{font-size:11.5px;color:var(--ink3);font-family:ui-monospace,Menlo,Consolas,monospace}
+
+.kv{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;font-size:12.5px;margin-bottom:4px}
+.kv .k{color:var(--ink3);font-weight:700}
+.kv .v{color:var(--ink2);word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace}
+
+/* 表单 */
+.row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.row label{font-size:12px;font-weight:750;color:var(--ink2)}
+.row .hint{font-size:11px;color:var(--ink3);font-weight:500}
+input[type=text],input[type=number],textarea{
+  width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--line);
+  background:color-mix(in srgb, var(--ink) 3%, transparent);color:var(--ink);
+  font:inherit;font-size:13px;outline:none;
+}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)}
+.switch{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink2)}
+.switch input{width:auto;transform:scale(1.15)}
+
+.bar{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+button{
+  padding:10px 18px;border-radius:11px;border:1px solid var(--line);
+  background:var(--paper);color:var(--ink2);font:inherit;font-size:13px;font-weight:800;
+  cursor:pointer;transition:transform .14s, box-shadow .18s;
+}
+button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(20,50,85,.12)}
+button:active{transform:scale(.97)}
+button.pri{background:linear-gradient(160deg,#3b82f6,#2563eb);color:#fff;border-color:transparent;
+  box-shadow:0 6px 18px rgba(59,130,246,.36)}
+button.ok{background:linear-gradient(160deg,#22b573,#12a05a);color:#fff;border-color:transparent}
+button.dg{background:linear-gradient(160deg,#ef5a5f,#e8454b);color:#fff;border-color:transparent}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+.msg{margin-top:10px;font-size:12.5px;font-weight:700;min-height:18px}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.wait{color:var(--ink3)}
+
+pre.log{
+  margin:10px 0 0;padding:11px 13px;border-radius:11px;max-height:190px;overflow:auto;
+  background:color-mix(in srgb, var(--ink) 5%, transparent);border:1px solid var(--line);
+  font:11.5px/1.7 ui-monospace,Menlo,Consolas,monospace;color:var(--ink2);white-space:pre-wrap;
+}
+@media (max-width:520px){
+  .kv{grid-template-columns:80px 1fr}
+  header h1{font-size:15.5px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a class="back" href="/admin" title="回管理后台">←</a>
+    <h1>QQ 群</h1>
+  </header>
+
+  <div class="card">
+    <h2>运行状态</h2>
+    <div class="st" id="st">
+      <span class="dot"></span>
+      <span class="t" id="stText">读取中…</span>
+      <span class="who" id="stWho"></span>
+    </div>
+    <div class="kv">
+      <span class="k">协议端地址</span><span class="v" id="kvApi">—</span>
+      <span class="k">生效群号</span><span class="v" id="kvGroups">—</span>
+      <span class="k">Webhook 密钥</span><span class="v" id="kvKey">—</span>
+      <span class="k">进程</span><span class="v" id="kvProc">—</span>
+    </div>
+    <div class="bar">
+      <button class="ok" id="btnStart" type="button">启动协议端</button>
+      <button class="dg" id="btnStop" type="button">停止协议端</button>
+      <button id="btnRefresh" type="button">刷新状态</button>
+      <button class="pri" id="btnPush" type="button">立即推送明天课表</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>配置</h2>
+    <p class="tip">改完点「保存配置」，NapCat 那边不用重启（本站每次现读配置文件）。</p>
+
+    <div class="row">
+      <label class="switch"><input type="checkbox" id="f_enabled"> 启用 QQ 群功能</label>
+    </div>
+
+    <div class="row">
+      <label>协议端 HTTP API 地址</label>
+      <input type="text" id="f_api" placeholder="http://127.0.0.1:3000">
+      <span class="hint">NapCat 的 HTTP 服务器地址，默认 3000 端口</span>
+    </div>
+
+    <div class="row">
+      <label>Token（可不填）</label>
+      <input type="text" id="f_token" placeholder="NapCat 里设的 access token">
+      <span class="hint">NapCat 网络配置里如果设了 token，这里要填一样的</span>
+    </div>
+
+    <div class="row">
+      <label>班级群号</label>
+      <input type="text" id="f_group" placeholder="例如 123456789">
+      <span class="hint">只有这个群里的消息会被响应</span>
+    </div>
+
+    <div class="row">
+      <label>Webhook 密钥</label>
+      <input type="text" id="f_key" placeholder="kt-qq-2026-dzxy">
+      <span class="hint">NapCat 上报地址要带这个：<code id="hookUrl">…</code></span>
+    </div>
+
+    <div class="row">
+      <label>NapCat 启动路径</label>
+      <input type="text" id="f_path" placeholder="C:\NapCat\launcher.bat">
+      <span class="hint">「启动协议端」按钮会执行这个文件；留空则不能一键启动</span>
+    </div>
+
+    <div class="row">
+      <label>定时推送时间</label>
+      <input type="text" id="f_push" placeholder="21:00">
+      <span class="hint">每天晚上按住这个时间推「明天的课 + 值日」；周五、周六晚自动跳过</span>
+    </div>
+
+    <div class="row">
+      <label>进程名（用于停止）</label>
+      <input type="text" id="f_proc" placeholder="NapCatWinBootMain.exe">
+      <span class="hint">留空则按启动路径的文件名推断</span>
+    </div>
+
+    <div class="bar">
+      <button class="pri" id="btnSave" type="button">保存配置</button>
+      <button id="btnReload" type="button">重新载入</button>
+    </div>
+    <div class="msg" id="msg2"></div>
+  </div>
+
+  <div class="card">
+    <h2>测试</h2>
+    <p class="tip">往班级群发一条测试消息，确认整条链路通了。</p>
+    <div class="bar">
+      <button id="btnTest" type="button">发测试消息</button>
+    </div>
+    <pre class="log" id="log">就绪。</pre>
+  </div>
+
+  <div class="card">
+    <h2>收消息诊断</h2>
+    <p class="tip">
+      群里发消息没反应时看这里。<br>
+      先在群里发一句「课表」，再点「读取事件日志」：
+      有记录 = NapCat 上报通了；没记录 = NapCat 的「HTTP 客户端」没配好。
+    </p>
+    <div class="kv">
+      <span class="k">上报地址</span><span class="v" id="kvHook">—</span>
+    </div>
+    <div class="bar">
+      <button id="btnDiag" type="button">读取事件日志</button>
+      <button class="pri" id="btnSim" type="button">模拟收到「课表」</button>
+      <button id="btnCopyHook" type="button">复制上报地址</button>
+    </div>
+    <pre class="log" id="diagLog">点上面的按钮开始诊断。</pre>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  function log(t) {
+    var el = $('log');
+    var time = new Date().toTimeString().slice(0, 8);
+    el.textContent = '[' + time + '] ' + t + '\n' + el.textContent;
+  }
+  function msg(id, text, kind) {
+    var el = $(id);
+    el.className = 'msg ' + (kind || 'wait');
+    el.textContent = text || '';
+  }
+
+  /* 统一请求：全部带超时，避免页面「动不了」 */
+  function req(url, opt) {
+    opt = opt || {};
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, opt.timeout || 12000);
+    var o = {
+      method: opt.method || 'GET',
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' }
+    };
+    if (opt.body !== undefined) {
+      o.headers['Content-Type'] = 'application/json';
+      o.body = JSON.stringify(opt.body);
+    }
+    if (ctrl) o.signal = ctrl.signal;
+    return fetch(url, o).then(function (r) {
+      clearTimeout(timer);
+      return r.text().then(function (t) {
+        var d = {};
+        try { d = JSON.parse(t); } catch (e) { d = { ok: false, message: '返回不是 JSON（HTTP ' + r.status + '）' }; }
+        if (r.status === 401) d = { ok: false, needAdmin: true, message: '需要管理口令，请先到 /admin 登录' };
+        return d;
+      });
+    }).catch(function (e) {
+      clearTimeout(timer);
+      return { ok: false, message: '请求失败：' + (e && e.name === 'AbortError' ? '超时' : e) };
+    });
+  }
+
+  var current = {};
+
+  function paintStatus(d) {
+    var st = $('st');
+    if (!d || !d.ok) {
+      st.className = 'st off';
+      $('stText').textContent = (d && d.message) || '读取失败';
+      $('stWho').textContent = '';
+      return;
+    }
+    var online = !!d.online;
+    st.className = 'st ' + (online ? 'on' : 'off');
+    $('stText').textContent = online ? '协议端在线' : (d.enabled ? '协议端未连接' : '功能已关闭');
+    $('stWho').textContent = d.account || '';
+    $('kvApi').textContent = d.api || '—';
+    $('kvGroups').textContent = (d.groups && d.groups.length) ? d.groups.join('、') : '未配置';
+    $('kvKey').textContent = d.webhook_key_set ? '已设置' : '未设置（任何人都能调用）';
+    $('kvProc').textContent = d.process || '未检测到';
+    $('btnStart').disabled = !d.napcat_path;
+    $('btnStop').disabled = !d.process_running;
+  }
+
+  function fillForm(d) {
+    current = d || {};
+    $('f_enabled').checked = !!d.enabled;
+    $('f_api').value = d.api || 'http://127.0.0.1:3000';
+    $('f_token').value = d.token_masked || '';
+    $('f_group').value = (d.groups && d.groups[0]) ? d.groups[0] : '';
+    $('f_key').value = d.webhook_key_masked || '';
+    $('f_path').value = d.napcat_path || '';
+    $('f_proc').value = d.napcat_proc || '';
+    $('f_push').value = d.push_time || '21:00';
+    $('kvHook').textContent = location.origin + '/api/qq/webhook?key=' +
+      (d.webhook_key_masked || '<密钥>');
+    var k = d.webhook_key_masked || '<密钥>';
+    $('hookUrl').textContent = location.origin + '/api/qq/webhook?key=' + k;
+  }
+
+  function load() {
+    msg('msg', '正在读取状态…', 'wait');
+    req('/api/admin/qq/status').then(function (d) {
+      paintStatus(d);
+      fillForm(d);
+      msg('msg', d.ok ? '' : (d.message || ''), d.ok ? 'ok' : 'bad');
+      return d;
+    }).then(function (d) {
+      if (!d || !d.ok) return;
+      // 顺带把运行态也刷一次，保证按钮可用性正确
+      $('btnStart').disabled = !d.napcat_path;
+      $('btnStop').disabled = !d.process_running;
+    }).catch(function (e) {
+      msg('msg', '读取失败：' + e, 'bad');
+    });
+  }
+
+  $('btnRefresh').onclick = function () { log('刷新状态'); load(); };
+  $('btnReload').onclick = function () { log('重新载入配置'); load(); };
+
+  $('btnSave').onclick = function () {
+    var body = {
+      enabled: $('f_enabled').checked,
+      api: $('f_api').value.trim(),
+      group: $('f_group').value.trim(),
+      webhook_key: $('f_key').value.trim(),
+      napcat_path: $('f_path').value.trim(),
+      napcat_proc: $('f_proc').value.trim(),
+      push_time: $('f_push').value.trim()
+    };
+    var tok = $('f_token').value.trim();
+    if (tok && tok.indexOf('•') < 0) body.token = tok;   // 掩码值不覆盖
+
+    $('btnSave').disabled = true;
+    msg('msg2', '保存中…', 'wait');
+    req('/api/admin/qq/save', { method: 'POST', body: body }).then(function (d) {
+      $('btnSave').disabled = false;
+      if (d.ok) {
+        msg('msg2', '已保存', 'ok');
+        log('配置已保存');
+        load();
+      } else {
+        msg('msg2', d.message || '保存失败', 'bad');
+        log('保存失败：' + (d.message || ''));
+      }
+    });
+  };
+
+  $('btnStart').onclick = function () {
+    $('btnStart').disabled = true;
+    msg('msg', '正在启动协议端…', 'wait');
+    log('启动协议端');
+    req('/api/admin/qq/start', { method: 'POST', body: {}, timeout: 20000 }).then(function (d) {
+      msg('msg', d.ok ? '已启动，等它自己连上' : (d.message || '启动失败'), d.ok ? 'ok' : 'bad');
+      log(d.ok ? '启动成功' : ('启动失败：' + (d.message || '')));
+      setTimeout(load, 2500);
+    });
+  };
+
+  $('btnStop').onclick = function () {
+    if (!confirm('确定停止 QQ 协议端？停止后群里发消息不会有回应。')) return;
+    $('btnStop').disabled = true;
+    msg('msg', '正在停止…', 'wait');
+    log('停止协议端');
+    req('/api/admin/qq/stop', { method: 'POST', body: {}, timeout: 15000 }).then(function (d) {
+      msg('msg', d.ok ? '已停止' : (d.message || '停止失败'), d.ok ? 'ok' : 'bad');
+      log(d.ok ? '已停止' : ('停止失败：' + (d.message || '')));
+      setTimeout(load, 1200);
+    });
+  };
+
+  $('btnTest').onclick = function () {
+    $('btnTest').disabled = true;
+    log('发送测试消息…');
+    req('/api/admin/qq/test', { method: 'POST', body: {}, timeout: 15000 }).then(function (d) {
+      $('btnTest').disabled = false;
+      log(d.ok ? '测试消息已发送' : ('发送失败：' + (d.message || '')));
+    });
+  };
+
+  $('btnPush').onclick = function () {
+    if (!confirm('现在往群里推一条「明天的课 + 值日」？')) return;
+    $('btnPush').disabled = true;
+    msg('msg', '正在推送…', 'wait');
+    log('手动推送明天的课表');
+    req('/api/admin/qq/push', { method: 'POST', body: { offset: 1 }, timeout: 25000 }).then(function (d) {
+      $('btnPush').disabled = false;
+      msg('msg', d.ok ? '已推送' : (d.message || '推送失败'), d.ok ? 'ok' : 'bad');
+      log(d.ok ? '推送成功' : ('推送失败：' + (d.message || '')));
+    });
+  };
+
+  $('btnDiag').onclick = function () {
+    var k = prompt('管理口令', 'YOUR_ADMIN_PASSWORD') || '';
+    if (!k) return;
+    $('diagLog').textContent = '读取中…';
+    req('/api/qq/debug?k=' + encodeURIComponent(k), { timeout: 15000 }).then(function (d) {
+      if (!d || !d.ok) {
+        $('diagLog').textContent = '读取失败：' + ((d && d.message) || '未知');
+        return;
+      }
+      var head = '生效群号: ' + JSON.stringify(d.allow_groups) +
+                 '\n协议端: ' + (d.api || '') +
+                 '\n\n';
+      var body = d.log || '（还没有事件。说明 NapCat 的上报没打到本站）';
+      if (!d.allow_groups || !d.allow_groups.length) {
+        head = '⚠ 群号没配置！先去上面「班级群号」填上并保存。\n\n' + head;
+      }
+      $('diagLog').textContent = head + body;
+    });
+  };
+
+  $('btnSim').onclick = function () {
+    log('模拟在群里发「课表」…');
+    $('diagLog').textContent = '正在模拟…';
+    req('/api/admin/qq/simulate', { method: 'POST', body: { text: '课表' }, timeout: 25000 })
+      .then(function (d) {
+        $('diagLog').textContent =
+          '结果: ' + JSON.stringify(d, null, 2) + '\n\n' +
+          '群里收到回复 → 发消息没问题，问题在 NapCat 的「HTTP 客户端（上报）」。\n' +
+          '群里没收到 → 发消息这一步就有问题，检查 HTTP 服务器。';
+      });
+  };
+
+  $('btnCopyHook').onclick = function () {
+    var t = $('kvHook').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t);
+    log('已复制：' + t);
+  };
+
+// 主题跟随
+  try {
+    var t = localStorage.getItem('kt_theme') || 'auto';
+    var dark = t === 'dark' || (t === 'auto' && window.matchMedia &&
+               window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) {}
+
+  // 初始加载 + 每 20 秒自刷新（只刷状态，不动表单）
+  load();
+  setInterval(function () {
+    req('/api/admin/qq/status', { timeout: 10000 }).then(function (d) {
+      if (d && d.ok) paintStatus(d);
+    });
+  }, 20000);
+})();
+</script>
+</body>
+</html>

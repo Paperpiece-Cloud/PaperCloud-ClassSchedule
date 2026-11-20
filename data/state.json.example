@@ -1,0 +1,1596 @@
+{
+ "revision": 18,
+ "updatedAt": 1794540010.2940345,
+ "lastOkAt": 1794540010.2940345,
+ "lastError": null,
+ "term": {
+  "name": "2026-2027学年第一学期（示例）"
+ },
+ "schedule": {
+  "courses": [
+   {
+    "id": "grid-C语言程序及应用-1-1",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "402_510",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-思想道德与法治-1-3",
+    "name": "思想道德与法治",
+    "teacher": "任宜海",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 3,
+    "endSection": 4,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-形势与政策（1）-1-5",
+    "name": "形势与政策（1）",
+    "teacher": "徐盈",
+    "room": "402_414",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 5,
+    "endSection": 6,
+    "weeks": [
+     7,
+     10,
+     13,
+     16
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-思想道德与法治-2-1",
+    "name": "思想道德与法治",
+    "teacher": "任宜海",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 2,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     3,
+     5,
+     7,
+     9,
+     11,
+     13,
+     15,
+     17
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-C语言程序及应用-2-3",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 2,
+    "startSection": 3,
+    "endSection": 4,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-C语言程序及应用-2-3-moved-w9w10",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 2,
+    "startSection": 5,
+    "endSection": 6,
+    "weeks": [
+     9,
+     10
+    ],
+    "raw": {
+     "source": "grid",
+     "moved": "C语言 第9/10周 周二 3-4节 -> 5-6节"
+    },
+    "note": "调课：原周二上午3-4节",
+    "changed": true
+   },
+   {
+    "id": "grid-大学英语（1）-2-7",
+    "name": "大学英语（1）",
+    "teacher": "李成芳",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 2,
+    "startSection": 7,
+    "endSection": 8,
+    "weeks": [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-电子技术与应用-3-1",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 3,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-中华民族共同体概论-3-3",
+    "name": "中华民族共同体概论",
+    "teacher": "吴林立",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 3,
+    "startSection": 3,
+    "endSection": 4,
+    "weeks": [
+     3,
+     5,
+     7,
+     9,
+     11,
+     13,
+     15,
+     17
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-电子技术与应用-4-1",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "402_415",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 4,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-人工智能通识课（含数字素养）-4-5",
+    "name": "人工智能通识课（含数字素养）",
+    "teacher": "刘婷",
+    "room": "203_401",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 4,
+    "startSection": 5,
+    "endSection": 6,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-体育（1）-4-7",
+    "name": "体育（1）",
+    "teacher": "杨然",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 4,
+    "startSection": 7,
+    "endSection": 8,
+    "weeks": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-电子技术与应用-5-1",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "402_415",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 5,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     9,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "grid-人工智能通识课（含数字素养）-5-3",
+    "name": "人工智能通识课（含数字素养）",
+    "teacher": "刘婷",
+    "room": "203_401",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 5,
+    "startSection": 3,
+    "endSection": 4,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   {
+    "id": "adhoc-3-5",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 3,
+    "startSection": 5,
+    "endSection": 6,
+    "weeks": [
+     9
+    ],
+    "raw": {
+     "source": "manual",
+     "note": "第9周临时加课"
+    },
+    "tag": "调课",
+    "hot": true
+   },
+   {
+    "id": "adhoc-3-9",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 3,
+    "startSection": 9,
+    "endSection": 10,
+    "weeks": [
+     9
+    ],
+    "raw": {
+     "source": "manual",
+     "note": "第9周临时加课"
+    },
+    "tag": "调课",
+    "hot": true
+   },
+   {
+    "id": "adhoc-4-9",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 4,
+    "startSection": 9,
+    "endSection": 10,
+    "weeks": [
+     9
+    ],
+    "raw": {
+     "source": "manual",
+     "note": "第9周临时加课"
+    },
+    "tag": "调课",
+    "hot": true
+   },
+   {
+    "id": "grid-电子技术与应用-5-1-room",
+    "name": "电子技术与应用",
+    "teacher": "杨其",
+    "room": "201C_206",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 5,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     10
+    ],
+    "raw": {
+     "source": "grid",
+     "room": "改教室：402_415 -> 201C_206"
+    },
+    "note": "改教室：402_415 -> 201C_206"
+   },
+   {
+    "id": "grid-C语言程序及应用-1-1-room",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "TEST_999",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     12
+    ],
+    "raw": {
+     "source": "grid",
+     "room": "改教室：402_510 -> TEST_999"
+    },
+    "note": "改教室：402_510 -> TEST_999"
+   }
+  ],
+  "count": 19,
+  "maxWeek": 30
+ },
+ "changes": [
+  {
+   "kind": "changed",
+   "course": {
+    "id": "grid-C语言程序及应用-1-1",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "402_510",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   "from": {
+    "id": "grid-C语言程序及应用-1-1",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "402_510",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   "text": "C语言程序及应用 调整：周一 1-2节 第3-18周 @402_510 → 周一 1-2节 第3-11,13-18周 @402_510"
+  },
+  {
+   "kind": "changed",
+   "course": {
+    "id": "grid-C语言程序及应用-1-1-room",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "TEST_999",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     12
+    ],
+    "raw": {
+     "source": "grid",
+     "room": "改教室：402_510 -> TEST_999"
+    },
+    "note": "改教室：402_510 -> TEST_999"
+   },
+   "from": {
+    "id": "grid-C语言程序及应用-1-1",
+    "name": "C语言程序及应用",
+    "teacher": "韦静静",
+    "room": "402_510",
+    "className": "26现代通信技术1班",
+    "campus": "",
+    "credit": "",
+    "type": "",
+    "weekday": 1,
+    "startSection": 1,
+    "endSection": 2,
+    "weeks": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18
+    ],
+    "raw": {
+     "source": "grid"
+    }
+   },
+   "text": "C语言程序及应用 调整：周一 1-2节 第3-18周 @402_510 → 周一 1-2节 第12周 @TEST_999"
+  }
+ ],
+ "history": [
+  {
+   "revision": 1,
+   "at": 1791871606.622638,
+   "changeCount": 7,
+   "summary": [
+    "新增 高等数学A（周一 1-2节 第1-16周 @教学楼1-101）",
+    "新增 大学英语（周一 3-4节 第1-16周 @教学楼2-305）",
+    "新增 程序设计基础（周二 5-6节 第1-8周 @实训楼A-402）",
+    "新增 程序设计基础（周四 5-6节 第1-8周 @实训楼A-402）",
+    "新增 体育（周三 7-8节 第1-16周 @田径场）",
+    "新增 思想道德与法治（周四 1-2节 第1-16周 @教学楼3-101）"
+   ]
+  },
+  {
+   "revision": 2,
+   "at": 1791872572.633575,
+   "changeCount": 2,
+   "summary": [
+    "新增 形势与政策（周五 7-8节 第1-16周 @报告厅）",
+    "大学英语 调整：周一 3-4节 第1-16周 @教学楼2-305 → 周二 3-4节 第1-16周 @教学楼2-401"
+   ]
+  },
+  {
+   "revision": 3,
+   "at": 1791873359.94816,
+   "changeCount": 9,
+   "summary": [
+    "新增 一键同步测试课（周二 3-4节 第1-16周 @测试教室）",
+    "取消 高等数学A（原 周一 1-2节 第1-16周 @教学楼1-101）",
+    "取消 大学英语（原 周二 3-4节 第1-16周 @教学楼2-401）",
+    "取消 程序设计基础（原 周二 5-6节 第1-8周 @实训楼A-402）",
+    "取消 程序设计基础（原 周四 5-6节 第1-8周 @实训楼A-402）",
+    "取消 体育（原 周三 7-8节 第1-16周 @田径场）"
+   ]
+  },
+  {
+   "revision": 4,
+   "at": 1791873371.109571,
+   "changeCount": 8,
+   "summary": [
+    "新增 高等数学A（周一 1-2节 第1-16周 @教学楼1-101）",
+    "新增 大学英语（周一 3-4节 第1-16周 @教学楼2-305）",
+    "新增 程序设计基础（周二 5-6节 第1-8周 @实训楼A-402）",
+    "新增 程序设计基础（周四 5-6节 第1-8周 @实训楼A-402）",
+    "新增 体育（周三 7-8节 第1-16周 @田径场）",
+    "新增 思想道德与法治（周四 1-2节 第1-16周 @教学楼3-101）"
+   ]
+  },
+  {
+   "revision": 5,
+   "at": 1791874705.3972597,
+   "changeCount": 14,
+   "summary": [
+    "新增 （周二 0-0节）",
+    "新增 （周三 0-0节）",
+    "新增 （周四 0-0节）",
+    "新增 （周五 0-0节）",
+    "新增 （周六 0-0节）",
+    "新增 （周日 0-0节）"
+   ]
+  },
+  {
+   "revision": 6,
+   "at": 1791874973.134055,
+   "changeCount": 17,
+   "summary": [
+    "新增 C语言程序及应用（周一 1-2节 第8周 @402_510）",
+    "新增 C语言程序及应用（周二 3-4节 第8周 @201C_206）",
+    "新增 思想道德与法治（周一 3-4节 第8周 @201C_206）",
+    "新增 大学英语（1）（周二 7-8节 第8周 @201C_206）",
+    "新增 电子技术与应用（周三 1-2节 第8周 @201C_206）",
+    "新增 电子技术与应用（周四 1-2节 第8周 @402_415）"
+   ]
+  },
+  {
+   "revision": 7,
+   "at": 1791876735.862628,
+   "changeCount": 13,
+   "summary": [
+    "新增 形势与政策（1）（周一 5-6节 第7,10,13,16周 @402_414）",
+    "新增 中华民族共同体概论（周三 3-4节 第3,5,7,9,11,13,15,17周 @201C_206）",
+    "C语言程序及应用 调整：周一 1-2节 第8周 @402_510 → 周一 1-2节 第3-18周 @402_510",
+    "C语言程序及应用 调整：周二 3-4节 第8周 @201C_206 → 周二 3-4节 第3-18周 @201C_206",
+    "思想道德与法治 调整：周一 3-4节 第8周 @201C_206 → 周一 3-4节 第3-18周 @201C_206",
+    "思想道德与法治 调整：周一 3-4节 第8周 @201C_206 → 周二 1-2节 第3,5,7,9,11,13,15,17周 @201C_206"
+   ]
+  },
+  {
+   "revision": 8,
+   "at": 1791889724.6835938,
+   "changeCount": 1,
+   "summary": [
+    "电子技术与应用 调整：周三 1-2节 第3-18周 @201C_206 → 周三 1-2节 第3-7,9-18周 @201C_206"
+   ]
+  },
+  {
+   "revision": 9,
+   "at": 1791889837.1431153,
+   "changeCount": 2,
+   "summary": [
+    "电子技术与应用 调整：周四 1-2节 第3-18周 @402_415 → 周四 1-2节 第3-7,9-18周 @402_415",
+    "电子技术与应用 调整：周四 1-2节 第3-18周 @402_415 → 周五 1-2节 第3-7,9-18周 @402_415"
+   ]
+  },
+  {
+   "revision": 10,
+   "at": 1792133578.1628537,
+   "changeCount": 3,
+   "summary": [
+    "电子技术与应用 调整：周三 1-2节 第3-7,9-18周 @201C_206 → 周三 1-2节 第3-18周 @201C_206",
+    "电子技术与应用 调整：周四 1-2节 第3-7,9-18周 @402_415 → 周四 1-2节 第3-18周 @402_415",
+    "电子技术与应用 调整：周四 1-2节 第3-7,9-18周 @402_415 → 周五 1-2节 第3-18周 @402_415"
+   ]
+  },
+  {
+   "revision": 18,
+   "at": 1794538999.5748794,
+   "changeCount": 2,
+   "summary": [
+    "C语言程序及应用 调整：周一 1-2节 第3-18周 @402_510 → 周一 1-2节 第3-11,13-18周 @402_510",
+    "C语言程序及应用 调整：周一 1-2节 第3-18周 @402_510 → 周一 1-2节 第12周 @TEST_999"
+   ]
+  }
+ ],
+ "rawSample": {
+  "code": 200,
+  "data": [
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "2",
+     "weekName": "星期一",
+     "sort": "1"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "2",
+      "dayOfWeekName": "星期一",
+      "time": "1,2",
+      "courseName": "C语言程序及应用",
+      "courseCode": "210160111050",
+      "weeks": "3-18",
+      "teacherName": "韦静静",
+      "teacherCode": "20190025",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "402_510",
+      "classroomCode": "387",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101601110501110301A109",
+      "timeName": "第1,2节",
+      "isLock": "0",
+      "sectionName": "1",
+      "groupId": "20263510301A12101601110501110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "2",
+     "weekName": "星期一",
+     "sort": "1"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "2",
+      "dayOfWeekName": "星期一",
+      "time": "3,4",
+      "courseName": "思想道德与法治",
+      "courseCode": "20201016",
+      "weeks": "3-18",
+      "teacherName": "任宜海",
+      "teacherCode": "80002289",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A1202010161110301A109",
+      "timeName": "第3,4节",
+      "isLock": "0",
+      "sectionName": "3",
+      "groupId": "20263510301A1202010161110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "2",
+     "weekName": "星期一",
+     "sort": "1"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "2",
+      "dayOfWeekName": "星期一",
+      "time": "5,6",
+      "courseName": "形势与政策（1）",
+      "courseCode": "20201007",
+      "weeks": "7;10;13;16",
+      "teacherName": "徐盈",
+      "teacherCode": "20170019",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "402_414",
+      "classroomCode": "376",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A1202010071110301A109",
+      "timeName": "第5,6节",
+      "isLock": "0",
+      "sectionName": "5",
+      "groupId": "20263510301A1202010071110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "2",
+     "weekName": "星期一",
+     "sort": "1"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "2",
+     "weekName": "星期一",
+     "sort": "1"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "3",
+     "weekName": "星期二",
+     "sort": "2"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "3",
+      "dayOfWeekName": "星期二",
+      "time": "1,2",
+      "courseName": "思想道德与法治",
+      "courseCode": "20201016",
+      "weeks": "3-17 单",
+      "teacherName": "任宜海",
+      "teacherCode": "80002289",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A1202010161110301A109",
+      "timeName": "第1,2节",
+      "isLock": "0",
+      "sectionName": "1",
+      "groupId": "20263510301A1202010161110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "3",
+     "weekName": "星期二",
+     "sort": "2"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "3",
+      "dayOfWeekName": "星期二",
+      "time": "3,4",
+      "courseName": "C语言程序及应用",
+      "courseCode": "210160111050",
+      "weeks": "3-18",
+      "teacherName": "韦静静",
+      "teacherCode": "20190025",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101601110501110301A109",
+      "timeName": "第3,4节",
+      "isLock": "0",
+      "sectionName": "3",
+      "groupId": "20263510301A12101601110501110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "3",
+     "weekName": "星期二",
+     "sort": "2"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "3",
+     "weekName": "星期二",
+     "sort": "2"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "3",
+      "dayOfWeekName": "星期二",
+      "time": "7,8",
+      "courseName": "大学英语（1）",
+      "courseCode": "21015020301012",
+      "weeks": "5-20",
+      "teacherName": "李成芳",
+      "teacherCode": "20180017",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A1210150203010121110301A109",
+      "timeName": "第7,8节",
+      "isLock": "0",
+      "sectionName": "7",
+      "groupId": "20263510301A1210150203010121110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "3",
+     "weekName": "星期二",
+     "sort": "2"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "4",
+     "weekName": "星期三",
+     "sort": "3"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "4",
+      "dayOfWeekName": "星期三",
+      "time": "1,2",
+      "courseName": "电子技术与应用",
+      "courseCode": "210160111052",
+      "weeks": "3-18",
+      "teacherName": "杨其",
+      "teacherCode": "80002427",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101601110521110301A109",
+      "timeName": "第1,2节",
+      "isLock": "0",
+      "sectionName": "1",
+      "groupId": "20263510301A12101601110521110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "4",
+     "weekName": "星期三",
+     "sort": "3"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "4",
+      "dayOfWeekName": "星期三",
+      "time": "3,4",
+      "courseName": "中华民族共同体概论",
+      "courseCode": "210160901006",
+      "weeks": "3-17 单",
+      "teacherName": "吴林立",
+      "teacherCode": "20170003",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101609010061110301A109",
+      "timeName": "第3,4节",
+      "isLock": "0",
+      "sectionName": "3",
+      "groupId": "20263510301A12101609010061110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "4",
+     "weekName": "星期三",
+     "sort": "3"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "4",
+     "weekName": "星期三",
+     "sort": "3"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "4",
+     "weekName": "星期三",
+     "sort": "3"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "5",
+     "weekName": "星期四",
+     "sort": "4"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "5",
+      "dayOfWeekName": "星期四",
+      "time": "1,2",
+      "courseName": "电子技术与应用",
+      "courseCode": "210160111052",
+      "weeks": "3-18",
+      "teacherName": "杨其",
+      "teacherCode": "80002427",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "402_415",
+      "classroomCode": "377",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101601110521110301A109",
+      "timeName": "第1,2节",
+      "isLock": "0",
+      "sectionName": "1",
+      "groupId": "20263510301A12101601110521110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "5",
+     "weekName": "星期四",
+     "sort": "4"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "5",
+     "weekName": "星期四",
+     "sort": "4"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "5",
+      "dayOfWeekName": "星期四",
+      "time": "5,6",
+      "courseName": "人工智能通识课（含数字素养）",
+      "courseCode": "210161101003",
+      "weeks": "3-18",
+      "teacherName": "刘婷",
+      "teacherCode": "20160060",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "203_401",
+      "classroomCode": "755",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101611010031110301A109",
+      "timeName": "第5,6节",
+      "isLock": "0",
+      "sectionName": "5",
+      "groupId": "20263510301A12101611010031110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "5",
+     "weekName": "星期四",
+     "sort": "4"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "5",
+      "dayOfWeekName": "星期四",
+      "time": "7,8",
+      "courseName": "体育（1）",
+      "courseCode": "20101011",
+      "weeks": "1-18",
+      "teacherName": "杨然",
+      "teacherCode": "20190054",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "201C_206",
+      "classroomCode": "74",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A1201010111110301A109",
+      "timeName": "第7,8节",
+      "isLock": "0",
+      "sectionName": "7",
+      "groupId": "20263510301A1201010111110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "5",
+     "weekName": "星期四",
+     "sort": "4"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "6",
+     "weekName": "星期五",
+     "sort": "5"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "6",
+      "dayOfWeekName": "星期五",
+      "time": "1,2",
+      "courseName": "电子技术与应用",
+      "courseCode": "210160111052",
+      "weeks": "3-18",
+      "teacherName": "杨其",
+      "teacherCode": "80002427",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "402_415",
+      "classroomCode": "377",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101601110521110301A109",
+      "timeName": "第1,2节",
+      "isLock": "0",
+      "sectionName": "1",
+      "groupId": "20263510301A12101601110521110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "6",
+     "weekName": "星期五",
+     "sort": "5"
+    },
+    "courseList": [
+     {
+      "dayOfWeek": "6",
+      "dayOfWeekName": "星期五",
+      "time": "3,4",
+      "courseName": "人工智能通识课（含数字素养）",
+      "courseCode": "210161101003",
+      "weeks": "3-18",
+      "teacherName": "刘婷",
+      "teacherCode": "20160060",
+      "className": "26现代通信技术1班",
+      "calssCode": "10301A109",
+      "classroomName": "203_401",
+      "classroomCode": "755",
+      "numberOfStudent": "49",
+      "semesters": "2026-2027-1",
+      "teachingClassName": "26现代通信技术1班",
+      "teachingClassCode": "20263510301A12101611010031110301A109",
+      "timeName": "第3,4节",
+      "isLock": "0",
+      "sectionName": "3",
+      "groupId": "20263510301A12101611010031110301A109",
+      "studentName": "李子艨",
+      "sumNum": 0,
+      "usableSeats": 0
+     }
+    ]
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "6",
+     "weekName": "星期五",
+     "sort": "5"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "6",
+     "weekName": "星期五",
+     "sort": "5"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "6",
+     "weekName": "星期五",
+     "sort": "5"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "7",
+     "weekName": "星期六",
+     "sort": "6"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "7",
+     "weekName": "星期六",
+     "sort": "6"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "7",
+     "weekName": "星期六",
+     "sort": "6"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "7",
+     "weekName": "星期六",
+     "sort": "6"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "7",
+     "weekName": "星期六",
+     "sort": "6"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "1_2",
+     "timeName": "第1-2节",
+     "sort": "1"
+    },
+    "week": {
+     "weekCode": "1",
+     "weekName": "星期日",
+     "sort": "7"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "3_4",
+     "timeName": "第3-4节",
+     "sort": "2"
+    },
+    "week": {
+     "weekCode": "1",
+     "weekName": "星期日",
+     "sort": "7"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "5_6",
+     "timeName": "第5-6节",
+     "sort": "3"
+    },
+    "week": {
+     "weekCode": "1",
+     "weekName": "星期日",
+     "sort": "7"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "7_8",
+     "timeName": "第7-8节",
+     "sort": "4"
+    },
+    "week": {
+     "weekCode": "1",
+     "weekName": "星期日",
+     "sort": "7"
+    },
+    "courseList": []
+   },
+   {
+    "time": {
+     "timeCode": "9_10",
+     "timeName": "第9-10节",
+     "sort": "5"
+    },
+    "week": {
+     "weekCode": "1",
+     "weekName": "星期日",
+     "sort": "7"
+    },
+    "courseList": []
+   }
+  ]
+ },
+ "source": "快捷调课"
+}
